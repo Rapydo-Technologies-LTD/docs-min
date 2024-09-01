@@ -1,0 +1,22 @@
+### Cache configuration
+
+* **Global Cache State** - Three modes are available:
+  * **All** - Cache is enabled for all query requests
+  * **Partial** - Cache is enabled only for specific queries defined by the cache rules
+  * **None** - Cache is disabled for all query requests
+
+* **Invalidation Type** - Relevant only for the All Global Cache State
+  * **Table Based** - When the system receives a write query to a specific table, the cache will automatically invalidate all cache entries that use this specific table 
+  * **TTL Based** - The system will automatically invalidate an cache record after a defined amount time
+
+* **TTL** - Relevant only for the All Global Cache State while using TTL mode. The value defines the automatic cache record invalidation time in milliseconds
+
+### Cache Rules
+
+**Partial Global Cache State** - Allows us to define specific rules to cache a specific queries
+* **Match Type** - The system will cache specific queries according to a pattern
+* **Invalidation Type**
+  * **Table Based** - When the system receives a write query to a specific table, the cache will automatically invalidate all cache entries that use this specific table 
+  * **TTL** - The system will automatically invalidate an cache record after a defined amount time
+* **TTL** - Relevant only for the Invalidation type is TTL. The value defines the automatic cache record invalidation time in milliseconds
+* **Pattern** - Allows us to define a pattern that can include a few queries.
