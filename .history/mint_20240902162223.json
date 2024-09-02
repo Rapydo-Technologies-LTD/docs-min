@@ -39,7 +39,14 @@
 				},
 				{
 					"group": "Queries",
-					"pages": ["queries/introduction"]
+					"pages": [
+						"quer/introduction",
+						"automation/defining_rules",
+						"automation/scout_triggers_and_actions",
+						"automation/cortex_triggers_and_actions",
+						"automation/alerts_triggers_and_actions",
+						"automation/cache_triggers_and_actions"
+					]
 				}
 			]
 		},
