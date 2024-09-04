@@ -39,7 +39,9 @@
 				},
 				{
 					"group": "Queries",
-					"pages": ["queries/introduction_to_queries", "queries/queries_view"]
+					"pages": [
+						"queries/introduction_to_queries"
+					]
 				}
 			]
 		},
