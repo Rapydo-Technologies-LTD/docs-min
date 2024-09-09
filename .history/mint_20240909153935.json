@@ -42,11 +42,8 @@
 					"pages": ["queries/introduction_to_queries", "queries/queries_view"]
 				},
 				{
-					"group": "Dashboard",
-					"pages": [
-						"dashboard/introduction_to_dashboard",
-						"dashboard/dashbaord_view"
-					]
+					"group": "Queries",
+					"pages": ["queries/introduction_to_queries", "queries/queries_view"]
 				}
 			]
 		},
