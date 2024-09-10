@@ -16,6 +16,7 @@ The dashboard is aimed at ensuring the following objectives:
 +	Error and Anomaly Detection: The dashboard highlights critical events like deadlocks, query throttling, unhealthy connections, and failed caching operations, helping to detect and address anomalies that could lead to downtime or performance degradation.
 +	User and Client Activity Tracking: The dashboard provides visibility into user activity, helping administrators understand user behavior and optimize the system to handle current or future user loads effectively.
 
+
 <img
   className="block dark:block"
   src="/images/dashboard/full.jpg"
@@ -23,8 +24,6 @@ The dashboard is aimed at ensuring the following objectives:
 />  
 
 ### Time Range
-
-This widget displays the time range for the data represented in the graphs and metrics. In this case, it is set to show performance and activity from the last 3 / 6 / 12 / 24 / 48 hours. This can be adjusted based on the user's needs.
 
 <img
   className="block dark:block"
@@ -35,8 +34,6 @@ This widget displays the time range for the data represented in the graphs and m
 
 ### DB Instances
 
-This widget displays the number of active database instances, idle instances, and stopped instances (0). Monitoring the state of instances helps in resource management and ensuring the right databases are running based on the current load.
-
 <img
   className="block dark:block"
   src="/images/dashboard/db-instances.jpg"
@@ -45,9 +42,6 @@ This widget displays the number of active database instances, idle instances, an
 /> 
 
 ### User Activity
-
-Displays the current number of active users versus idle users. Active users are those interacting with the system, while idle users have not performed any significant activity recently.
-High idle user counts with low activity might indicate a need for session timeout adjustments or inactive user clean-up.
 
 <img
   className="block dark:block"
@@ -58,9 +52,6 @@ High idle user counts with low activity might indicate a need for session timeou
 
 ### DB Connection Health
 
-This widget shows the number of healthy and unhealthy database connections. Unhealthy connections could be due to network issues, resource constraints, or connection errors.
-Investigate unhealthy connections to avoid system downtime or performance issues.
-
 <img
   className="block dark:block"
   src="/images/dashboard/connection-health.jpg"
@@ -69,8 +60,6 @@ Investigate unhealthy connections to avoid system downtime or performance issues
 /> 
 
 ### Query Average Time
-
-This widget shows the average query execution time across all database instances over the selected time range. It provides insight into the performance of the queries being run and can help identify slow-running queries.
 
 <img
   className="block dark:block"
@@ -81,8 +70,6 @@ This widget shows the average query execution time across all database instances
 
 ### Longest Query
 
-Displays the time taken by the longest-running query during the selected time range. This metric helps in identifying potential bottlenecks and inefficiencies in the system.
-
 <img
   className="block dark:block"
   src="/images/dashboard/longest-query.jpg"
@@ -91,8 +78,6 @@ Displays the time taken by the longest-running query during the selected time ra
 /> 
 
 ### Deadlocks
-
-This shows the number of deadlocks encountered in the database. Deadlocks occur when two or more queries block each other, preventing further execution. This is a critical metric for ensuring the smooth operation of the system.
 
 <img
   className="block dark:block"
@@ -103,8 +88,6 @@ This shows the number of deadlocks encountered in the database. Deadlocks occur 
 
 ### Query Throttling
 
-Indicates the number of times query execution has been throttled. Throttling usually happens due to resource constraints like CPU or memory limits, where queries are temporarily delayed or limited to avoid system overload.
-
 <img
   className="block dark:block"
   src="/images/dashboard/query-throtteling.jpg"
@@ -113,8 +96,6 @@ Indicates the number of times query execution has been throttled. Throttling usu
 /> 
 
 ### Clients
-
-This metric shows the number of active database clients. A client refers to an application or user connected to the database.
 
 <img
   className="block dark:block"
@@ -125,9 +106,6 @@ This metric shows the number of active database clients. A client refers to an a
 
 ### Caching
 
-This widget displays the number of caching instances running. Caching helps improve query performance by storing frequently accessed data in memory for faster retrieval.
-Make sure caching instances are running optimally to reduce load on the main database and improve response times.
-
 <img
   className="block dark:block"
   src="/images/dashboard/caching.jpg"
@@ -137,9 +115,6 @@ Make sure caching instances are running optimally to reduce load on the main dat
 
 ### Max CPU Usage
 
-This graph shows the CPU usage across different database instances. The Y-axis represents the percentage of CPU usage, while the X-axis represents the time. Each line corresponds to a specific instance, and spikes in usage can indicate high-load activities or resource-intensive queries.
-Keep an eye on instances that approach 100% usage, as this can lead to degraded performance or system overloads.
-
 <img
   className="block dark:block"
   src="/images/dashboard/max-cpu.jpg"
@@ -147,9 +122,6 @@ Keep an eye on instances that approach 100% usage, as this can lead to degraded 
 /> 
 
 ### Locks
-
-This graph shows the number of locks held at different time points. Database locks are mechanisms to control access to data during transactions. A high number of locks can indicate contention and slow down operations.
-Investigate instances where there is a large number of locks to identify and resolve transaction conflicts.
 
 <img
   className="block dark:block"
@@ -160,9 +132,6 @@ Investigate instances where there is a large number of locks to identify and res
 
 ### Max Connections
 
-This graph displays the maximum percentage of database connections used across different instances. It helps ensure that the number of active connections doesn't exceed the allowed limit for each instance.
-Monitor connection usage to ensure your system is not nearing or exceeding the connection limit, which can result in connection errors.
-
 <img
   className="block dark:block"
   src="/images/dashboard/max-connections.jpg"
@@ -170,9 +139,6 @@ Monitor connection usage to ensure your system is not nearing or exceeding the c
 /> 
 
 ### IOPS
-
-This graph shows the Input/Output Operations Per Second (IOPS) usage for each database instance. IOPS is a key metric for understanding the performance of storage systems, especially in high-transaction environments.
-Spikes in IOPS can indicate high read/write activity. If sustained high IOPS occur, consider scaling your storage systems or optimizing queries.
 
 <img
   className="block dark:block"

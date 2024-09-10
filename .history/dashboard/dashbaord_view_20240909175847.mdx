@@ -148,9 +148,6 @@ Keep an eye on instances that approach 100% usage, as this can lead to degraded 
 
 ### Locks
 
-This graph shows the number of locks held at different time points. Database locks are mechanisms to control access to data during transactions. A high number of locks can indicate contention and slow down operations.
-Investigate instances where there is a large number of locks to identify and resolve transaction conflicts.
-
 <img
   className="block dark:block"
   src="/images/dashboard/locks.jpg"
@@ -160,9 +157,6 @@ Investigate instances where there is a large number of locks to identify and res
 
 ### Max Connections
 
-This graph displays the maximum percentage of database connections used across different instances. It helps ensure that the number of active connections doesn't exceed the allowed limit for each instance.
-Monitor connection usage to ensure your system is not nearing or exceeding the connection limit, which can result in connection errors.
-
 <img
   className="block dark:block"
   src="/images/dashboard/max-connections.jpg"
@@ -170,9 +164,6 @@ Monitor connection usage to ensure your system is not nearing or exceeding the c
 /> 
 
 ### IOPS
-
-This graph shows the Input/Output Operations Per Second (IOPS) usage for each database instance. IOPS is a key metric for understanding the performance of storage systems, especially in high-transaction environments.
-Spikes in IOPS can indicate high read/write activity. If sustained high IOPS occur, consider scaling your storage systems or optimizing queries.
 
 <img
   className="block dark:block"
