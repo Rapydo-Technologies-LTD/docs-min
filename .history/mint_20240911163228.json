@@ -51,7 +51,7 @@
 				{
 					"group": "Database Details",
 					"pages": [
-						"db-details/introduction_to_database_details",
+						"db-details/introduction_to_database-details",
 						"db-details/database_details_view"
 					]
 				}

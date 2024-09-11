@@ -49,10 +49,10 @@
 					]
 				},
 				{
-					"group": "Database Details",
+					"group": "Database Setails",
 					"pages": [
-						"db-details/introduction_to_database_details",
-						"db-details/database_details_view"
+						"dashboard/introduction_to_dashboard",
+						"dashboard/dashbaord_view"
 					]
 				}
 			]

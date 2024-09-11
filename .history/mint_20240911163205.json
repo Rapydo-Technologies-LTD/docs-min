@@ -51,8 +51,8 @@
 				{
 					"group": "Database Details",
 					"pages": [
-						"db-details/introduction_to_database_details",
-						"db-details/database_details_view"
+						"db-details/introduction_to_db-details",
+						"db-details/db_details_view"
 					]
 				}
 			]
