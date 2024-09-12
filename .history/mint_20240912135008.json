@@ -56,10 +56,10 @@
 					]
 				},
 				{
-					"group": "Execute Query",
+					"group": "Database Details",
 					"pages": [
-						"execute-query/introduction_to_execute_query",
-						"execute-query/execute_query_view"
+						"db-details/introduction_to_database_details",
+						"db-details/database_details_view"
 					]
 				}
 			]

@@ -1,0 +1,148 @@
+## Execute Query View
+
+**Full Execute Query Interface**
+
+This image shows the main interface of the Execute Query View. Key elements include:
+
+- **Selected Instances**: At the top of the screen, the user can select one or more databases (e.g., demo-db, xtra-demo-instance-01, etc.). This allows the query to be executed across multiple databases at once.
+- **SQL Query Editor**: Users can type or paste their SQL queries directly into the text box. In this example, a query is created to examine row usage and index efficiency. This query can be run immediately or saved as a template for future use.
+- **Templates Section**: Below the query editor, commonly used templates are displayed (e.g., Schema Drift, View User Privileges, Poor Index Usage). These templates help automate repetitive query tasks and reduce the need for manual input.
+- **Execute/Cancel Options**: Users can execute the query on the selected instances or cancel the operation if needed.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full.jpg"
+  alt="Execute Query View"
+/>  
+
+At the top of the screen, the user can select one or more databases (e.g., demo-db, xtra-demo-instance-01, etc.). This allows the query to be executed across multiple databases at once.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/select-db.jpg"
+  alt="Execute Query View"
+/> 
+
+Below the query editor, commonly used templates are displayed (e.g., Schema Drift, View User Privileges, Poor Index Usage). These templates help automate repetitive query tasks and reduce the need for manual input.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/templates.jpg"
+  alt="Execute Query View"
+  width={200}
+/> 
+
+Users can type or paste their SQL queries directly into the text box. In this example, a query is created to examine row usage and index efficiency. This query can be run immediately or saved as a template for future use.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/sql-input.jpg"
+  alt="Execute Query View"
+/> 
+
+This screenshot illustrates the **Save Template Feature**. After a query is executed, users can save the query as a template for future use. Templates can be reused for common administrative tasks, eliminating the need for repetitive query writing. The saved templates can also be modified or deleted as necessary, offering flexibility in query management.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/save-template.jpg"
+  alt="Execute Query View"
+  width={200}
+/> 
+
+This image shows the SQL query used for detecting schema drifts. The query compares the column names and ordinal positions across selected instances to find inconsistencies. This is especially useful in environments with multiple replicas or instances to ensure data integrity.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/schema-drifts-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+The Schema Drift query results are displayed here. This query identifies differences in schema definitions across multiple instances, helping administrators maintain consistent data structures. The results show any mismatches in column definitions, data types, and table structures, allowing for quick corrective action.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/schema-drifts-results.jpg"
+  alt="Execute Query View"
+/>
+
+This shows the query used to fetch user privileges. By running SHOW GRANTS FOR admin, the system retrieves all the privileges granted to the admin user, which is a crucial step for access control and security.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/user-privileges-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+This image shows a result set of user privileges, displaying what permissions are granted to users. It helps database administrators understand the level of access that different users have and make necessary changes.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/user-privileges-results.jpg"
+  alt="Execute Query View"
+/> 
+
+This image displays the SQL query used to detect poor index usage. By examining queries where more rows are examined than necessary, this query helps users identify which parts of their database might benefit from improved indexing strategies.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/poor-indexes-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+In this image, we see the result set for the Poor Index Usage query. Similar to the full table scan results, this view highlights:
+
+- **SUM_ROWS_EXAMINED and SUM_ROWS_SENT
+- **DIGEST_TEXT
+	•	RECOMMENDATION: Focused on advising users to optimize index usage for queries that are underperforming due to poor index selection.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/poor-indexes-results.jpg"
+  alt="Execute Query View"
+/> 
+
+This screenshot displays the SQL query behind the **Top 10 Time-Consuming Queries** template. The query calculates the percentage of time each query consumed by summing the total wait time and provides other performance metrics. This template can be selected from the predefined list or saved for future use.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/top-10-time-consuming-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+This image shows the result set for a **Top 10 Time-Consuming Queries** template. The query retrieves the most time-consuming queries executed on each instance, sorted by total time spent. Columns include:
+
+- **Percentage:** The percentage of time each query consumed relative to others.
+- **Total:** Total time spent on the query.
+- **Calls:** Number of times the query was called.
+- **Mean:** Average time per query execution.
+- **SQL Digest Text:** A shortened version of the SQL text for easier identification.
+
+This data provides valuable insights into query performance and can guide optimization efforts.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/top-10-time-consuming-results.jpg"
+  alt="Execute Query View"
+/> 
+
+This screenshot shows the SQL code used to identify full table scans across the selected databases. The query helps database administrators find inefficient queries that examine large numbers of rows unnecessarily, which can lead to performance bottlenecks.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full-table-scan-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+This image demonstrates the result set for a Full Table Scan. Key columns include:
+
+- **SUM_ROWS_EXAMINED** and **SUM_ROWS_SENT**: These columns show the number of rows examined and sent by the query.
+- **DIGEST_TEXT**: This column captures a summarized version of the SQL statement executed, offering insight into the query type.
+- **RECOMMENDATION**: Here, users can view recommendations for optimizing index usage or improving query efficiency.
+
+The results are presented in a clean tabular format, making it easy to analyze the performance of the query across different database instances.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full-table-scan-results.jpg"
+  alt="Execute Query View"
+/> 

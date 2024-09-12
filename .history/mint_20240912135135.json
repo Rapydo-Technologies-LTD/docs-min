@@ -59,7 +59,7 @@
 					"group": "Execute Query",
 					"pages": [
 						"execute-query/introduction_to_execute_query",
-						"execute-query/execute_query_view"
+						"execute-query/database_details_view"
 					]
 				}
 			]

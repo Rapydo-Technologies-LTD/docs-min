@@ -1,0 +1,162 @@
+## Execute Query View
+
+The **Database Details View** provides a comprehensive interface for monitoring and managing the databases connected to the system. It is divided into several sections, each serving a specific purpose to assist administrators in managing database instances effectively.
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full.jpg"
+  alt="Execute Query View"
+/>  
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/select-db.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/templates.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/sql-input.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/save-template.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/schema-drifts-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/schema-drifts-results.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/user-privileges-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/user-privileges-results.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/poor-indexes-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/poor-indexes-results.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/top-10-time-consuming-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/top-10-time-consuming-results.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full-table-scan-sql.jpg"
+  alt="Execute Query View"
+/> 
+
+<img
+  className="block dark:block"
+  src="/images/execute-query/full-table-scan-results.jpg"
+  alt="Execute Query View"
+/> 
+
+### Top Bar: Summary of Key Database Metrics
+
+The top bar presents an overview of the key metrics across all databases connected to the system. It includes:
+
+- **CPU Usage:** Displays the maximum CPU utilization percentage among the databases.
+- **Available RAM:** Shows the maximum amount of available RAM for the connected databases.
+- **Connections:** Shows the maximum number of active connections across databases.
+- **Duration:** Shows the maximum session duration.
+- **Users:** Displays the number of active users for the database with the highest activity.
+- **Locks:** Indicates the number of database locks on the most utilized database.
+- **Databases:** Displays the total number of databases in the system.
+- **Hosts:** Shows the number of hosts running databases.
+- **IOPS (Input/Output Operations Per Second):** Displays the IOPS for the database under the highest load.
+
+This bar gives a quick snapshot of overall system performance.
+
+<img
+  className="block dark:block"
+  src="/images/db-details/top-bar.jpg"
+  alt="Database Details View"
+/> 
+
+### Configured Databases Table
+
+The table presents all the currently configured databases along with the following details for each:
+
+- **DB Identifier:** The unique identifier or name of the database.
+- **Engine:** The database engine in use (e.g., MySQL).
+- **Engine Version:** The version of the database engine.
+- **Size:** The instance size of the database (e.g., db.t3.medium).
+- **Cluster Identifier:** If applicable, shows the identifier for the database cluster.
+- **Status:** The current status of the database (e.g., available, stopped).
+- **Has Rapydo:** Displays whether Rapydo, the system's monitoring tool, is installed on the database (Yes/No).
+
+Administrators can use this table to monitor all the databases currently connected to the system and assess their state.
+
+<img
+  className="block dark:block"
+  src="/images/db-details/table.jpg"
+  alt="Database Details View"
+/> 
+
+### Configuration View: Database Connections
+
+This section allows administrators to connect new databases to the system. It presents the list of databases that are available for connection and those that are already configured. Administrators can check off the databases they want to add to the system.
+
+This view also enables administrators to review and update the list of databases being actively monitored, ensuring that the system always has the latest database connections.
+
+<img
+  className="block dark:block"
+  src="/images/db-details/config-table.jpg"
+  alt="Database Details View"
+/> 
+
+### Configuration Modal: Database Authentication
+
+When adding new databases to the system, the **Configuration Modal** prompts the user to provide their Amazon RDS credentials. This includes:
+
+- **Username:** The admin or master username for the database.
+- **Password:** The corresponding password for the database.
+
+These credentials are encrypted and used solely for configuring new databases in the system. The modal ensures secure integration of new databases by verifying authentication details before they are added to the system.
+
+<img
+  className="block dark:block"
+  src="/images/db-details/conf-modal.jpg"
+  alt="Database Details View"
+/> 
