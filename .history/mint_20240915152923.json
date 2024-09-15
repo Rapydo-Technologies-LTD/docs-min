@@ -63,10 +63,10 @@
 					]
 				},
 				{
-					"group": "Query Throttling",
+					"group": "Execute Query",
 					"pages": [
-						"throttling/introduction_to_throttling",
-						"throttling/throttling_view"
+						"execute-query/introduction_to_execute_query",
+						"execute-query/execute_query_view"
 					]
 				}
 			]

@@ -65,8 +65,8 @@
 				{
 					"group": "Query Throttling",
 					"pages": [
-						"throttling/introduction_to_throttling",
-						"throttling/throttling_view"
+						"throttling/introduction_to_execute_query",
+						"execute-query/execute_query_view"
 					]
 				}
 			]
