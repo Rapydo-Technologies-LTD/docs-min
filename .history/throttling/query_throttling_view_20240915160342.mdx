@@ -1,0 +1,68 @@
+## Query Throttling View
+
+### Automating Query Throttling: Enhancing Efficiency and Reducing Manual Effort
+
+Manually managing query load in a dynamic environment is not only impractical but also inefficient. Database administrators (DBAs) cannot constantly monitor every query running on the system and decide which ones to throttle. In addition, modern applications generate a constant stream of queries, often too fast for manual intervention. This is where automation becomes essential.
+Automating query throttling allows the system to dynamically monitor incoming queries and take predefined actions without human intervention. By defining rules that target specific patterns, the system can identify potentially problematic queries and apply throttling measures before they impact database performance. For example, a rule can be created to automatically throttle queries containing the sql_calc_found_rows clause, ensuring that no more than a specified number of these queries are executed simultaneously.
+Automation not only saves time but also provides a layer of protection against unexpected query spikes or changes in query patterns. The system can respond immediately when the conditions of a rule are met, applying throttling measures to limit resource consumption. This ensures that database performance remains stable even under heavy load, without requiring constant oversight from DBAs.
+Furthermore, automation allows for fine-grained control over throttling behavior. Rules can be tailored to match specific query patterns, users, or IP addresses, providing the flexibility to optimize throttling for different workloads. This level of customization ensures that the system applies throttling precisely where it’s needed, without impacting the performance of other, less resource-intensive queries.
+
+
+### Defining Throttling Rules and Tracking Query Behavior
+
+To leverage the power of automated query throttling, users need to define specific rules that govern when and how throttling is applied. These rules are highly customizable, allowing users to tailor them to their specific database workloads. Here’s how to define and monitor throttling rules in the system:
+
++ Rule Definition:
+	+	Rule Name: Each throttling rule begins with a descriptive name that clearly identifies its purpose. For example, Queue_sql_calc_found_rows indicates that this rule targets queries using the sql_calc_found_rows clause.
+	+	SQL Pattern Matching: The core of the throttling rule is the SQL pattern it matches. This pattern tells the system which queries to target for throttling. In this case, the rule is triggered whenever a query contains the sql_calc_found_rows keyword, which is known to be resource-intensive. By using pattern matching, the system can easily identify and throttle problematic queries without needing to specify every possible query individually.
+	+	Throttle Value: The throttle value sets the limit on how many queries matching the pattern can run concurrently. For example, setting the throttle value to 2 ensures that no more than two queries containing sql_calc_found_rows are executed at the same time. Any additional queries matching the pattern will be queued until one of the throttled queries completes. This prevents the database from being overloaded by multiple intensive queries running simultaneously.
++ Tracking Throttled Queries:
+	+ Once a throttling rule is active, users can monitor its effectiveness by viewing details about the queries that have been throttled. The query view provides a comprehensive overview of these queries, including:
+	+ SQL Query: The full text of the query that has been throttled, allowing administrators to understand exactly which queries are being impacted by the rule.
+	+ IP Address: The IP address of the user or application that submitted the query, helping to identify the source of the throttled queries.
+	+ Username: The database user associated with the query, providing additional context for troubleshooting or auditing purposes.
+	+ Queue Position: The position of the throttled query in the execution queue. This indicates how long the query will need to wait before it can be executed.
+	+ Enqueued Time: The time at which the query was enqueued for throttling, helping to track how long queries have been delayed.
+
+This detailed tracking ensures that administrators can see which queries are being throttled in real-time, providing valuable insight into query behavior and system performance. If necessary, the throttle value or SQL pattern can be adjusted based on the observed query load.
+
+**Explanation of the Screenshots**
+
+The first screenshot shows a high-level overview of the defined throttling rules. In this case, the rule Queue_sql_calc_found_rows has been triggered 36 times, meaning that 36 queries matching the pattern have been throttled since the rule was created. The table also shows the earliest and latest times when the rule was triggered, allowing users to track the rule’s activity over time. This gives a clear picture of how frequently the rule is being applied and how long it has been active.
+
+<img
+  className="block dark:block"
+  src="/images/throttling/closed.jpg"
+  alt="Throttling Full"
+/> 
+
+The second screenshot provides a more detailed look at the individual queries that have been throttled by the system. It lists all queries that match the sql_calc_found_rows pattern, along with relevant information such as:
+
++ The full SQL query being throttled.
++ The IP address (172.31.85.188) of the user or application that submitted the query.
++ The username (scaling_app) associated with the query.
++ The position of the query in the throttling queue, indicating how many queries are ahead of it.
++ The time at which the query was enqueued for throttling, providing a sense of how long the query has been delayed.
+
+This view allows administrators to monitor throttled queries in real-time, giving them the information they need to make informed decisions about adjusting throttling rules or query execution.
+	
+<img
+  className="block dark:block"
+  src="/images/throttling/open.jpg"
+  alt="Throttling Full"
+/> 
+
+The final screenshot demonstrates how users can configure a throttling rule in the system. In this example, the rule Queue_sql_calc_found_rows is enabled and is set to trigger on queries that match the sql_calc_found_rows pattern. The throttle value is set to 2, meaning that no more than two queries matching this pattern will be allowed to execute concurrently. Any additional matching queries will be placed in a queue until one of the throttled queries completes.
+The screenshot also shows the flexibility of the rule configuration interface, allowing users to set additional trigger conditions and actions. This enables highly customized throttling rules that can be adapted to different query patterns and database workloads.
+By leveraging automated query throttling and providing real-time monitoring of throttled queries, this system offers a powerful solution for managing database performance in high-traffic or resource-intensive environments. Administrators can fine-tune throttling rules to prevent performance degradation and ensure the database remains responsive, even under heavy load.
+For more detailed guidance, visit the [automation section](https://docs.rapydo.io/automation/introduction)  of the Rapydo documentation.
+
+  <img
+  className="block dark:block"
+  src="/images/throttling/rule.jpg"
+  alt="Throttling Full"
+/> 
+
+
+
+

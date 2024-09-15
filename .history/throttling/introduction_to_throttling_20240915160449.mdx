@@ -8,7 +8,7 @@ Query throttling becomes a critical tool to mitigate the impact of these resourc
 
 Moreover, throttling is particularly important in high-traffic applications where many users may be issuing similar types of queries. By intelligently limiting how many of these queries are allowed to execute at once, administrators can ensure a smoother and more predictable user experience, especially during peak loads.
 
-**Automating Query Throttling: Enhancing Efficiency and Reducing Manual Effort**
+Automating Query Throttling: Enhancing Efficiency and Reducing Manual Effort
 
 Manually managing query load in a dynamic environment is not only impractical but also inefficient. Database administrators (DBAs) cannot constantly monitor every query running on the system and decide which ones to throttle. In addition, modern applications generate a constant stream of queries, often too fast for manual intervention. This is where automation becomes essential.
 Automating query throttling allows the system to dynamically monitor incoming queries and take predefined actions without human intervention. By defining rules that target specific patterns, the system can identify potentially problematic queries and apply throttling measures before they impact database performance. For example, a rule can be created to automatically throttle queries containing the sql_calc_found_rows clause, ensuring that no more than a specified number of these queries are executed simultaneously.
