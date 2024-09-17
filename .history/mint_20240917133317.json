@@ -27,13 +27,6 @@
 			"pages": [
 				"introduction",
 				{
-					"group": "Dashboard",
-					"pages": [
-						"dashboard/introduction_to_dashboard",
-						"dashboard/dashboard_view"
-					]
-				},
-				{
 					"group": "Automation",
 					"pages": [
 						"automation/introduction",
@@ -48,7 +41,13 @@
 					"group": "Queries",
 					"pages": ["queries/introduction_to_queries", "queries/queries_view"]
 				},
-
+				{
+					"group": "Dashboard",
+					"pages": [
+						"dashboard/introduction_to_dashboard",
+						"dashboard/dashboord_view"
+					]
+				},
 				{
 					"group": "Database Details",
 					"pages": [
