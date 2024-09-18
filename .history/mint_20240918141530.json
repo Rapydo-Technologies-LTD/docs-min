@@ -3,7 +3,7 @@
 	"name": "Rapydo Documentation",
 	"logo": {
 		"dark": "/logo/logo.png",
-		"light": "/logo/logo2.png"
+		"light": "/logo/logo.png"
 	},
 	"favicon": "/favicon.svg",
 	"colors": {
