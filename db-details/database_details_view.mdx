@@ -6,7 +6,7 @@ The **Database Details View** provides a comprehensive interface for monitoring 
   className="block dark:block"
   src="/images/db-details/full.jpg"
   alt="Database Details View"
-/>  
+/>
 
 ### Top Bar: Summary of Key Database Metrics
 
@@ -28,7 +28,7 @@ This bar gives a quick snapshot of overall system performance.
   className="block dark:block"
   src="/images/db-details/top-bar.jpg"
   alt="Database Details View"
-/> 
+/>
 
 ### Configured Databases Table
 
@@ -48,7 +48,7 @@ Administrators can use this table to monitor all the databases currently connect
   className="block dark:block"
   src="/images/db-details/table.jpg"
   alt="Database Details View"
-/> 
+/>
 
 ### Configuration View: Database Connections
 
@@ -60,7 +60,7 @@ This view also enables administrators to review and update the list of databases
   className="block dark:block"
   src="/images/db-details/config-table.jpg"
   alt="Database Details View"
-/> 
+/>
 
 ### Configuration Modal: Database Authentication
 
@@ -75,4 +75,64 @@ These credentials are encrypted and used solely for configuring new databases in
   className="block dark:block"
   src="/images/db-details/conf-modal.jpg"
   alt="Database Details View"
-/> 
+/>
+
+## Deployment Process
+
+When you click **"Deploy Rapydo"** and provide your RDS credentials, the following setup occurs automatically based on your database engine:
+
+## PostgreSQL Setup
+
+sql
+
+```
+-- 1. Create dedicated monitoring user
+CREATE USER rapydo_admin WITH PASSWORD '[secure_generated_password]' INHERIT;
+
+-- 2. Grant comprehensive monitoring privileges
+GRANT rds_superuser, pg_monitor, pg_read_all_settings, pg_read_all_stats, pg_stat_scan_tables 
+TO rapydo_monitor;
+
+-- 3. Enable query statistics tracking
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+```
+
+## MySQL Setup
+
+sql
+
+```
+-- 1. Create dedicated monitoring user
+CREATE USER 'rapydo_monitor'@'%' IDENTIFIED BY '[secure_generated_password]';
+
+-- 2. Grant monitoring privileges
+GRANT PROCESS, EXECUTE, SELECT, CREATE USER ON *.* TO 'rapydo_monitor'@'%';
+
+-- 3. Apply changes
+FLUSH PRIVILEGES;
+```
+
+## Required Privileges Explained
+
+### PostgreSQL Privileges
+
+- **rds_superuser**			     View all user sessions in pg_stat_activity, not just monitoring user's own sessions
+- \*\*pg_monitor                       \*\*Access to all pg_stat\_\* views for performance monitoring
+- **pg_read_all_settings**	Read database configuration for optimization recommendations
+- **pg_read_all_stats**		     Access to detailed database statistics
+- **pg_stat_scan_tables**	Analyze table sizes and storage usage
+
+### MySQL Privileges
+
+- **PROCESS**			    **Required** - View all user sessions in `SHOW PROCESSLIST`
+- **SELECT**                    Read performance schema tables and system statistics
+- **EXECUTE**	            Run RDS procedures like `mysql.rds_kill_query()` and `mysql.rds_kill()` for query termination.
+
+### Security Notes
+
+- **Credentials are encrypted** and used only for initial setup
+- **Read-only monitoring** - no data modification capabilities
+- **Dedicated user** - isolated from your application users
+- **Minimal required access** - only what's needed for database monitoring
+
+**Your master credentials are never stored and are only used during this one-time setup process.**

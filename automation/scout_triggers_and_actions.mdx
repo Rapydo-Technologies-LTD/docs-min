@@ -4,15 +4,40 @@
 
 **Select Database(s)** - allows you to choose one or more database instances to apply the rule to.
 
-### Trigger Types
+### **Trigger Types**
 
-- **Query pattern** - the action(s) will be triggered when the current query matches the given query pattern.
-- **Query Duration** - the action(s) will be triggered when the current query duration is greater than the specified duration.
-- **User(s)** - the action(s) will be triggered when a user or users are connecting to the database.
-- **IP(s)** - The action(s) will be triggered when a host with a specific IP address connects to the database.
-- **Database Name** - The action(s) will be triggered when a certain database schema is accessed by a user.
-- **Connection Utilization** - The action(s) will be triggered when the connection utilization to a certain Database(s) exceeds a certain percentage.
-- **Custom Script** - The action(s) will be triggered when a custom script, provided by the user, runs and finds processes which will be killed by the system.
+- **Query pattern** - Triggers when a running database query matches a specific pattern you define.
+  - **Use for**:
+    - **Security**: Kill dangerous queries like DROP, detect intrusions using honeypot tables
+    - **Performance**: Kill inefficient IOPS-intensive queries
+    - **Sensitive data protection**: Kill queries accessing sensitive tables
+  - **Examples**:
+    - **Security**: Create a "honeypot" dummy table - if someone queries it, this indicates a potential security intrusion
+    - **Performance**: Kill IOPS-intensive queries that slow down the database
+    - **Sensitive data**: Kill running SELECT queries from salary table
+- **Query Duration** - Triggers when a running query exceeds the time limit you set.
+  - **Use for**: Performance protection - kill long-running queries that can slow down the database
+  - **Example**: Kill queries that have been running more than 30 seconds
+- **User(s)** - Triggers when specific database users have running processes.
+  - **Use for**: Kill problematic user activity, or use mostly as a secondary trigger combined with other conditions
+  - **Example**: Kill running processes from "test_user" OR kill queries from "admin_user" that match dangerous patterns
+- **IP(s)** - Triggers when running processes come from specific IP addresses.
+  - **Use for**: Security (kill processes from suspicious IPs), or use mostly as a secondary trigger
+  - **Example**: Kill running processes from 192.168.1.100 OR kill queries from internal IPs accessing sensitive data
+- **Database Name** - Triggers when running processes access specific database schemas.
+  - **Use for**: Mostly as a secondary trigger combined with other conditions to add database-specific rules
+  - **Example**: Kill long-running queries only when running on production database
+- **Connection Utilization** - Triggers when database connection usage exceeds a percentage you set.
+  - **Use for**: Prevent applications from getting "too many connections" errors that would cause application failures
+  - **Why use rapydo**: Rapydo proactively manages connections by killing idle ones before the limit is reached, keeping your applications up & running instead of waiting for connection errors to occur
+  - **Example**: Kill idle connections when 80% of connection limit is reached, ensuring space for new application requests
+- **Connection idle time** - Triggers when a database connection has been idle (in "sleep" mode) for longer than the specified time.
+  - **Use for**: Resource management - kill idle connections to free up database memory
+  - **Why use rapydo**: While both PostgreSQL and MySQL have built-in configuration parameters for idle connection timeout, rapydo allows you to set different values per user or per database for more granular control
+  - **Example**: Kill connections that have been idle for more than 10 minutes, or set 5 minutes for test users but 30 minutes for admin users
+- **Custom Script** - Triggers when your custom script identifies running processes that should be terminated.
+  - **Use for**: Advanced monitoring needs that require custom logic
+  - **Example**: Kill processes based on complex business rules
 
 ### Trigger Operator Types
 
