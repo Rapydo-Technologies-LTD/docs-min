@@ -49,65 +49,65 @@
   - `update admin set %;` - matches any UPDATE on admin table
   - 
 
-    ```sql
-    -- ORIGINAL QUERY
-    SELECT 
-        c.[customer_id],
-        c.[first_name] + ' ' + c.[last_name] AS [full_name],
-        cat.[category_name],
-        p.[product_name],
-        p.[price],
-        oi.[quantity],
-        (oi.[quantity] * p.[price]) AS [line_total],
-        o.[order_date],
-        r.[rating],
-        r.[review_text],
-        CASE 
-            WHEN r.[rating] >= 4 THEN 'Positive'
-            WHEN r.[rating] = 3 THEN 'Neutral'
-            ELSE 'Negative'
-        END AS [review_sentiment]
-    FROM [customers] c
-    INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
-    INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
-    INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
-    LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
-    LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
-        AND c.[customer_id] = r.[customer_id]
-    WHERE o.[order_date] >= '2023-01-01'
-        AND p.[price] > 50.00
-        AND c.[country] IN ('USA', 'Canada', 'UK')
-    ```
+  ```sql
+  -- ORIGINAL QUERY
+  SELECT 
+      c.[customer_id],
+      c.[first_name] + ' ' + c.[last_name] AS [full_name],
+      cat.[category_name],
+      p.[product_name],
+      p.[price],
+      oi.[quantity],
+      (oi.[quantity] * p.[price]) AS [line_total],
+      o.[order_date],
+      r.[rating],
+      r.[review_text],
+      CASE 
+          WHEN r.[rating] >= 4 THEN 'Positive'
+          WHEN r.[rating] = 3 THEN 'Neutral'
+          ELSE 'Negative'
+      END AS [review_sentiment]
+  FROM [customers] c
+  INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+  INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+  INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+  LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+  LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+      AND c.[customer_id] = r.[customer_id]
+  WHERE o.[order_date] >= '2023-01-01'
+      AND p.[price] > 50.00
+      AND c.[country] IN ('USA', 'Canada', 'UK')
+  ```
 
-    ```sql
-    -- Find Any date any proce and any country 
-    SELECT 
-        c.[customer_id],
-        c.[first_name] + ' ' + c.[last_name] AS [full_name],
-        cat.[category_name],
-        p.[product_name],
-        p.[price],
-        oi.[quantity],
-        (oi.[quantity] * p.[price]) AS [line_total],
-        o.[order_date],
-        r.[rating],
-        r.[review_text],
-        CASE 
-            WHEN r.[rating] >= 4 THEN 'Positive'
-            WHEN r.[rating] = 3 THEN 'Neutral'
-            ELSE 'Negative'
-        END AS [review_sentiment]
-    FROM [customers] c
-    INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
-    INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
-    INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
-    LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
-    LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
-        AND c.[customer_id] = r.[customer_id]
-    WHERE o.[order_date] >= %
-        AND p.[price] > %
-        AND c.[country] IN (%)
-    ```
+  ```sql
+  -- Find Any date any proce and any country 
+  SELECT 
+      c.[customer_id],
+      c.[first_name] + ' ' + c.[last_name] AS [full_name],
+      cat.[category_name],
+      p.[product_name],
+      p.[price],
+      oi.[quantity],
+      (oi.[quantity] * p.[price]) AS [line_total],
+      o.[order_date],
+      r.[rating],
+      r.[review_text],
+      CASE 
+          WHEN r.[rating] >= 4 THEN 'Positive'
+          WHEN r.[rating] = 3 THEN 'Neutral'
+          ELSE 'Negative'
+      END AS [review_sentiment]
+  FROM [customers] c
+  INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+  INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+  INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+  LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+  LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+      AND c.[customer_id] = r.[customer_id]
+  WHERE o.[order_date] >= %
+      AND p.[price] > %
+      AND c.[country] IN (%)
+  ```
 - **Not Like** - similar to the operator Like, but it is used for triggering an action when the given query pattern does not include the current query.
 - **Is Greater Than** - this operator is relevant to the Trigger type Query Duration.
 
@@ -115,7 +115,7 @@
 
 - **Query pattern** - the string of the query pattern using % wildcard for matching any content. The system is **case-insensitive** and **automatically removes semicolons** before matching.
   - Use **%** to represent any content: `select % from table_name;`
-- Patterns must match query structure exactly (except case and semicolons).
+  - Patterns must match query structure exactly (except case and semicolons).
 - Rule will not work when **different spacing/formatting** such as extra spaces or different line breaks.
 
 **In case your rule query is:**
@@ -153,6 +153,11 @@ join payments p on c.customernumber = p.customernumber
 where p.amount < 1000 limit 1;
 ```
 
+- **<u>Best Practices for Copy-Paste Query Patterns</u>**
+  - Copy query from **Rapydo Application** (Query worksapce | Dashbord slowest reports)
+  - Copy from **Query Logs/Monitor (**Database query logs, Application logs, Query monitoring tools (rapydo), Database audit trails)
+
+    This ensures the **exact spacing and formatting** that will actually be executed.
 - **Query Duration** - the time above which the action will be triggered.
 - **User(s)** - a comma separated list of a User(s).
 - **IP(s)** - a comma separated list of IP(s).
