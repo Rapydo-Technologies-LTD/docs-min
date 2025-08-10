@@ -113,9 +113,46 @@
 
 ### Trigger Values
 
-- **Query pattern** - the string of the query pattern using % wildcard for matching any content. The system is case-insensitive and automatically removes semicolons before matching.
-  - Use \!@\! to represent any content: `select % from table_name;`
-  - Patterns must match query structure exactly (except case and semicolons)
+- **Query pattern** - the string of the query pattern using % wildcard for matching any content. The system is **case-insensitive** and **automatically removes semicolons** before matching.
+  - Use **%** to represent any content: `select % from table_name;`
+- Patterns must match query structure exactly (except case and semicolons).
+- Rule will not work when **different spacing/formatting** such as extra spaces or different line breaks.
+
+**In case your rule query is:**
+
+sql
+
+```
+SELECT e.lastName, e.firstName, p.amount,pg_sleep(%) FROM employees e JOIN
+```
+
+**This will work even if you have case variations:**
+
+sql
+
+```
+select e.lastname, e.firstname, p.amount,pg_sleep(10) from employees e join customers
+```
+
+**But this will not - because of extra spaces:**
+
+sql
+
+```
+select e.lastname,     e.firstname,     p.amount,pg_sleep(10)     from employees
+```
+
+**And this too doesn't work - because of line break:**
+
+sql
+
+```
+select e.lastname, e.firstname, p.amount,pg_sleep(10)
+from employees e join customers c on e.employeenumber = c.salesrepemployeenumber
+join payments p on c.customernumber = p.customernumber
+where p.amount < 1000 limit 1;
+```
+
 - **Query Duration** - the time above which the action will be triggered.
 - **User(s)** - a comma separated list of a User(s).
 - **IP(s)** - a comma separated list of IP(s).
