@@ -91,7 +91,7 @@ CREATE USER rapydo_admin WITH PASSWORD '[secure_generated_password]' INHERIT;
 
 -- 2. Grant comprehensive monitoring privileges
 GRANT rds_superuser, pg_monitor, pg_read_all_settings, pg_read_all_stats, pg_stat_scan_tables 
-TO rapydo_monitor;
+TO rapydo_admin;
 
 -- 3. Enable query statistics tracking
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
@@ -106,7 +106,7 @@ sql
 CREATE USER 'rapydo_monitor'@'%' IDENTIFIED BY '[secure_generated_password]';
 
 -- 2. Grant monitoring privileges
-GRANT PROCESS, EXECUTE, SELECT, CREATE USER ON *.* TO 'rapydo_monitor'@'%';
+GRANT PROCESS, EXECUTE, SELECT ON *.* TO 'rapydo_monitor'@'%';
 
 -- 3. Apply changes
 FLUSH PRIVILEGES;

@@ -47,6 +47,67 @@
   - `select % from users;` - matches any SELECT from users table
   - `delete from %;` - matches any DELETE without WHERE clause
   - `update admin set %;` - matches any UPDATE on admin table
+  - 
+
+    ```sql
+    -- ORIGINAL QUERY
+    SELECT 
+        c.[customer_id],
+        c.[first_name] + ' ' + c.[last_name] AS [full_name],
+        cat.[category_name],
+        p.[product_name],
+        p.[price],
+        oi.[quantity],
+        (oi.[quantity] * p.[price]) AS [line_total],
+        o.[order_date],
+        r.[rating],
+        r.[review_text],
+        CASE 
+            WHEN r.[rating] >= 4 THEN 'Positive'
+            WHEN r.[rating] = 3 THEN 'Neutral'
+            ELSE 'Negative'
+        END AS [review_sentiment]
+    FROM [customers] c
+    INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+    INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+    INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+    LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+    LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+        AND c.[customer_id] = r.[customer_id]
+    WHERE o.[order_date] >= '2023-01-01'
+        AND p.[price] > 50.00
+        AND c.[country] IN ('USA', 'Canada', 'UK')
+    ```
+
+    ```sql
+    -- Find Any date any proce and any country 
+    SELECT 
+        c.[customer_id],
+        c.[first_name] + ' ' + c.[last_name] AS [full_name],
+        cat.[category_name],
+        p.[product_name],
+        p.[price],
+        oi.[quantity],
+        (oi.[quantity] * p.[price]) AS [line_total],
+        o.[order_date],
+        r.[rating],
+        r.[review_text],
+        CASE 
+            WHEN r.[rating] >= 4 THEN 'Positive'
+            WHEN r.[rating] = 3 THEN 'Neutral'
+            ELSE 'Negative'
+        END AS [review_sentiment]
+    FROM [customers] c
+    INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+    INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+    INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+    LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+    LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+        AND c.[customer_id] = r.[customer_id]
+    WHERE o.[order_date] >= %
+        AND p.[price] > %
+        AND c.[country] IN (%)
+    ```
 - **Not Like** - similar to the operator Like, but it is used for triggering an action when the given query pattern does not include the current query.
 - **Is Greater Than** - this operator is relevant to the Trigger type Query Duration.
 
