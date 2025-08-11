@@ -123,7 +123,7 @@
 sql
 
 ```
-SELECT e.lastName, e.firstName, p.amount,pg_sleep(%) FROM employees e JOIN
+SELECT e.lastName, e.firstName, p.amount,pg_sleep(%)  FROM employees e JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber JOIN payments p ON c.customerNumber = p.customerNumber WHERE p.amount < 1000 limit 1;
 ```
 
 **This will work even if you have case variations:**
@@ -131,7 +131,7 @@ SELECT e.lastName, e.firstName, p.amount,pg_sleep(%) FROM employees e JOIN
 sql
 
 ```
-select e.lastname, e.firstname, p.amount,pg_sleep(10) from employees e join customers
+select e.lastname, e.firstname, p.amount,pg_sleep(10)  from employees e join customers c on e.employeenumber = c.salesrepemployeenumber join payments p on c.customernumber = p.customernumber where p.amount < 1000 limit 1;
 ```
 
 **But this will not - because of extra spaces:**
@@ -139,7 +139,7 @@ select e.lastname, e.firstname, p.amount,pg_sleep(10) from employees e join cust
 sql
 
 ```
-select e.lastname,     e.firstname,     p.amount,pg_sleep(10)     from employees
+SELECT e.lastName,    e.firstName  , p.amount,   pg_sleep(10)  FROM employees e JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber JOIN payments p ON c.customerNumber = p.customerNumber WHERE p.amount < 1000 limit 1;
 ```
 
 **And this too doesn't work - because of line break:**
@@ -155,7 +155,7 @@ where p.amount < 1000 limit 1;
 
 - **<u>Best Practices for Copy-Paste Query Patterns</u>**
   - Copy query from **Rapydo Application** (Query worksapce | Dashbord slowest reports).
-  - Copy from **Query Logs/Monitor (**Database query logs, Application logs, Query monitoring tools (rapydo), Database audit trails)
+  - Copy from \*\*Query Logs/Monitor (\*\*Database query logs, Application logs, Query monitoring tools (rapydo), Database audit trails)
 
     This ensures the **exact spacing and formatting** that will actually be executed.
 - **Query Duration** - the time above which the action will be triggered.
