@@ -1,201 +1,369 @@
-**Triggers** - events that are defined by the user, for example: The CPU Utilization of the database machine is over 90%.
+# Database Rule Trigger Configuration Guide
 
-**Actions** - the measures that the user defines for the system to take if a certain triggers (conditions) are met.
+## Rule Setup Flow
 
-**Select Database(s)** - allows you to choose one or more database instances to apply the rule to.
+### **1. DB Instances** (Required First Step)
 
-### **Trigger Types**
+Select which database instances this rule will monitor.
 
-- **Query pattern** - Triggers when a running database query matches a specific pattern you define.
-  - **Use for**:
-    - **Security**: Kill dangerous queries like DROP, detect intrusions using honeypot tables
-    - **Performance**: Kill inefficient IOPS-intensive queries
-    - **Sensitive data protection**: Kill queries accessing sensitive tables
-  - **Examples**:
-    - **Security**: Create a "honeypot" dummy table - if someone queries it, this indicates a potential security intrusion
-    - **Performance**: Kill IOPS-intensive queries that slow down the database
-    - **Sensitive data**: Kill running SELECT queries from salary table
-- **Query Duration** - Triggers when a running query exceeds the time limit you set.
-  - **Use for**: Performance protection - kill long-running queries that can slow down the database
-  - **Example**: Kill queries that have been running more than 30 seconds
-- **User(s)** - Triggers when specific database users have running processes.
-  - **Use for**: Kill problematic user activity, or use mostly as a secondary trigger combined with other conditions
-  - **Example**: Kill running processes from "test_user" OR kill queries from "admin_user" that match dangerous patterns
-- **IP(s)** - Triggers when running processes come from specific IP addresses.
-  - **Use for**: Security (kill processes from suspicious IPs), or use mostly as a secondary trigger
-  - **Example**: Kill running processes from 192.168.1.100 OR kill queries from internal IPs accessing sensitive data
-- **Database Name** - Triggers when running processes access specific database schemas.
-  - **Use for**: Mostly as a secondary trigger combined with other conditions to add database-specific rules
-  - **Example**: Kill long-running queries only when running on production database
-- **Connection Utilization** - Triggers when database connection usage exceeds a percentage you set.
-  - **Use for**: Prevent applications from getting "too many connections" errors that would cause application failures
-  - **Why use rapydo**: Rapydo proactively manages connections by killing idle ones before the limit is reached, keeping your applications up & running instead of waiting for connection errors to occur
-  - **Example**: Kill idle connections when 80% of connection limit is reached, ensuring space for new application requests
-- **Connection idle time** - Triggers when a database connection has been idle (in "sleep" mode) for longer than the specified time.
-  - **Use for**: Resource management - kill idle connections to free up database memory
-  - **Why use rapydo**: While both PostgreSQL and MySQL have built-in configuration parameters for idle connection timeout, rapydo allows you to set different values per user or per database for more granular control
-  - **Example**: Kill connections that have been idle for more than 10 minutes, or set 5 minutes for test users but 30 minutes for admin users
-- **Custom Script** - Triggers when your custom script identifies running processes that should be terminated.
-  - **Use for**: Advanced monitoring needs that require custom logic
-  - **Example**: Kill processes based on complex business rules
+**Interface:** Dropdown with checkboxes
 
-### Trigger Operator Types
+- **Select All**: Choose all available instances at once
+- **Individual Selection**: Pick specific instances
+- **Impact**: Your selection here determines what databases and users appear in trigger dropdowns later
 
-- **In** - this operator is relevant to the Trigger types: User(s) and IP(s), and allows us to define a few IP addresses or Users that will trigger the action(s) defined.
-- **Not In** - similar to the operator In, but it is used for triggering an action when the IPs or Users are not included in the given list.
-- **Like** - this operator is relevant to the Trigger type: Query Pattern, and allows you to define a pattern using the % wildcard to match queries. The % wildcard represents any content in the query. Pattern matching is case-insensitive and semicolons are automatically removed. - Examples: \\
-  - `select % from users;` - matches any SELECT from users table
-  - `delete from %;` - matches any DELETE without WHERE clause
-  - `update admin set %;` - matches any UPDATE on admin table
-  - 
+---
 
-  ```sql
-  -- ORIGINAL QUERY
-  SELECT 
-      c.[customer_id],
-      c.[first_name] + ' ' + c.[last_name] AS [full_name],
-      cat.[category_name],
-      p.[product_name],
-      p.[price],
-      oi.[quantity],
-      (oi.[quantity] * p.[price]) AS [line_total],
-      o.[order_date],
-      r.[rating],
-      r.[review_text],
-      CASE 
-          WHEN r.[rating] >= 4 THEN 'Positive'
-          WHEN r.[rating] = 3 THEN 'Neutral'
-          ELSE 'Negative'
-      END AS [review_sentiment]
-  FROM [customers] c
-  INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
-  INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
-  INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
-  LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
-  LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
-      AND c.[customer_id] = r.[customer_id]
-  WHERE o.[order_date] >= '2023-01-01'
-      AND p.[price] > 50.00
-      AND c.[country] IN ('USA', 'Canada', 'UK')
-  ```
+### **2. Triggers** (Up to 3 Maximum)
 
-  ```sql
-  -- Find Any date any proce and any country 
-  SELECT 
-      c.[customer_id],
-      c.[first_name] + ' ' + c.[last_name] AS [full_name],
-      cat.[category_name],
-      p.[product_name],
-      p.[price],
-      oi.[quantity],
-      (oi.[quantity] * p.[price]) AS [line_total],
-      o.[order_date],
-      r.[rating],
-      r.[review_text],
-      CASE 
-          WHEN r.[rating] >= 4 THEN 'Positive'
-          WHEN r.[rating] = 3 THEN 'Neutral'
-          ELSE 'Negative'
-      END AS [review_sentiment]
-  FROM [customers] c
-  INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
-  INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
-  INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
-  LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
-  LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
-      AND c.[customer_id] = r.[customer_id]
-  WHERE o.[order_date] >= %
-      AND p.[price] > %
-      AND c.[country] IN (%)
-  ```
-- **Not Like** - similar to the operator Like, but it is used for triggering an action when the given query pattern does not include the current query.
-- **Is Greater Than** - this operator is relevant to the Trigger type Query Duration.
+Configure conditions that will activate your rule. All triggers use **AND** logic - ALL must be true simultaneously.
 
-### Trigger Values
+#### **Trigger Type** (Required)
 
-- **Query pattern** - the string of the query pattern using % wildcard for matching any content. The system is **case-insensitive** and **automatically removes semicolons** before matching.
-  - Use **%** to represent any content: `select % from table_name;`
-  - Patterns must match query structure exactly (except case and semicolons).
-- Rule will not work when **different spacing/formatting** such as extra spaces or different line breaks.
+Choose what aspect of database activity to monitor:
 
-**In case your rule query is:**
+---
 
-sql
+### **Connection idle time**
 
-```
+Monitors connections in "sleep" state.
+
+**Operator Options:**
+
+- **Greater Than**: Trigger when idle time exceeds value
+- **Less Than**: Trigger when idle time is below value
+
+**Value:** Enter time in seconds
+
+**Example:** Greater Than 600 = Trigger for connections idle over 10 minutes
+
+**Use Cases:**
+
+- Free up memory from abandoned connections
+- Prevent connection pool exhaustion
+- Clean up development/test connections
+
+---
+
+### **Connection utilization**
+
+Monitors database connection pool usage as percentage (%) of maximum.
+
+**Operator Options:**
+
+- **Greater Than**: Trigger when usage exceeds percentage
+- **Less Than**: Trigger when usage falls below percentage
+
+**Value:** Enter percentage (0-100)
+
+**Example:** Greater Than 80 = Trigger when 80% of connections are in use
+
+**Use Cases:**
+
+- Prevent "too many connections" errors
+- Proactive connection pool management
+- Emergency connection cleanup during high load
+
+---
+
+### **Query duration**
+
+Monitors how long queries have been running.
+
+**Operator Options:**
+
+- **Greater Than**: Trigger when runtime exceeds duration
+- **Less Than**: Trigger when runtime is below duration
+
+**Value:** Enter time in seconds
+
+**Example:** Greater Than  30 = Kill queries running longer than 30 seconds
+
+**Use Cases:**
+
+- Stop running queries that slow the database
+- Enforce query timeout policies
+- Performance protection
+
+---
+
+### **Query pattern**
+
+Matches running queries against patterns using SQL LIKE syntax.
+
+**Interface:** Manual text entry
+
+**Pattern Behavior:**
+
+- The system is **case-insensitive** and **automatically removes semicolons** before matching
+- Use **%** wildcard to represent any content: `select % from table_name`
+- Patterns must match query structure exactly (except case and semicolons)
+- **⚠️ Critical**: Rule will **NOT work** with different spacing/formatting such as extra spaces or different line breaks
+
+**Operator Options:**
+
+- **Like**: Trigger when queries match any pattern
+- **Not Like**: Trigger when queries don't match any pattern
+
+**Value:** Enter SQL patterns using `%` (any characters)
+
+**Examples:**
+
+- **Security**: Like: `%DROP TABLE%` - Block destructive operations
+- **Performance**: Not Like: `%limit%` - Block inefficient queries
+- **Compliance**: Like: `%SELECT * FROM salary%` - Monitor sensitive data access
+
+---
+
+#### **Complex Pattern Examples**
+
+**Example 1: Simple Query with Wildcards**
+
+**Your rule query pattern:**
+
+```sql
 SELECT e.lastName, e.firstName, p.amount,pg_sleep(%)  FROM employees e JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber JOIN payments p ON c.customerNumber = p.customerNumber WHERE p.amount < 1000 limit 1;
 ```
 
-**This will work even if you have case variations:**
+**✅ This WILL work (case variations):**
 
-sql
-
-```
+```sql
 select e.lastname, e.firstname, p.amount,pg_sleep(10)  from employees e join customers c on e.employeenumber = c.salesrepemployeenumber join payments p on c.customernumber = p.customernumber where p.amount < 1000 limit 1;
 ```
 
-**But this will not - because of extra spaces:**
+**❌ This will NOT work (extra spaces):**
 
-sql
-
-```
+```sql
 SELECT e.lastName,    e.firstName  , p.amount,   pg_sleep(10)  FROM employees e JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber JOIN payments p ON c.customerNumber = p.customerNumber WHERE p.amount < 1000 limit 1;
 ```
 
-**And this too doesn't work - because of line break:**
+**❌ This will NOT work (line breaks):**
 
-sql
-
-```
+```sql
 select e.lastname, e.firstname, p.amount,pg_sleep(10)
 from employees e join customers c on e.employeenumber = c.salesrepemployeenumber
 join payments p on c.customernumber = p.customernumber
 where p.amount < 1000 limit 1;
 ```
 
-- **<u>Best Practices for Copy-Paste Query Patterns</u>**
-  - Copy query from **Rapydo Application** (Query worksapce | Dashbord slowest reports).
-  - Copy from \*\*Query Logs/Monitor (\*\*Database query logs, Application logs, Query monitoring tools (rapydo), Database audit trails)
+---
 
-    This ensures the **exact spacing and formatting** that will actually be executed.
-- **Query Duration** - the time above which the action will be triggered.
-- **User(s)** - a comma separated list of a User(s).
-- **IP(s)** - a comma separated list of IP(s).
-- **Database Name** - a comma separated list of name(s) of the relevant database schema(s).
-- **Connection Utilization** - a percentage value above which the action(s) will be triggered.
-- **Custom Script** - the relevant script.
+**Example 2: Multi-line Query with Multiple Wildcards**
 
-### Action Types
+**Original Query:**
 
-- **No Action** - No action will be taken. Useful when only a notification is wanted.
-- **Kill Query** - Kill/cancel the specific query that matches the trigger pattern while keeping the database connection alive. Uses `pg_cancel_backend` for PostgreSQL and `CALL mysql.rds_kill_query` for MySQL.
-- **Kill Connection** - Terminate the entire database connection that matches the trigger pattern. Uses `pg_terminate_backend` for PostgreSQL and `CALL mysql.rds_kill` for MySQL.
-- **Rate Limit** - Limit the rate of a certain connection that match the trigger value.
-- **Lock** - Lock a certain User(s) or IP(s) etc' out of the system.
-- **Kill idle connections** - All idle connection will be killed when the trigger value is matched.
+```sql
+-- ORIGINAL QUERY
+SELECT 
+    c.[customer_id],
+    c.[first_name] + ' ' + c.[last_name] AS [full_name],
+    cat.[category_name],
+    p.[product_name],
+    p.[price],
+    oi.[quantity],
+    (oi.[quantity] * p.[price]) AS [line_total],
+    o.[order_date],
+    r.[rating],
+    r.[review_text],
+    CASE 
+        WHEN r.[rating] >= 4 THEN 'Positive'
+        WHEN r.[rating] = 3 THEN 'Neutral'
+        ELSE 'Negative'
+    END AS [review_sentiment]
+FROM [customers] c
+INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+    AND c.[customer_id] = r.[customer_id]
+WHERE o.[order_date] >= '2023-01-01'
+    AND p.[price] > 50.00
+    AND c.[country] IN ('USA', 'Canada', 'UK')
+```
 
-### Action Values
+**Rule Pattern (to catch any date, price, and country variations):**
 
-- **No Action** - No value.
-- **Kill Connection** - No value.
-- **Rate Limit** - Limit the resources of the current request request to a defined based on the trigger type and value. All requests above the limit will be ignored.
-- **Lock** - No value.
-- **Kill idle connections** - No value.
+```sql
+SELECT 
+    c.[customer_id],
+    c.[first_name] + ' ' + c.[last_name] AS [full_name],
+    cat.[category_name],
+    p.[product_name],
+    p.[price],
+    oi.[quantity],
+    (oi.[quantity] * p.[price]) AS [line_total],
+    o.[order_date],
+    r.[rating],
+    r.[review_text],
+    CASE 
+        WHEN r.[rating] >= 4 THEN 'Positive'
+        WHEN r.[rating] = 3 THEN 'Neutral'
+        ELSE 'Negative'
+    END AS [review_sentiment]
+FROM [customers] c
+INNER JOIN [orders] o ON c.[customer_id] = o.[customer_id]
+INNER JOIN [order_items] oi ON o.[order_id] = oi.[order_id]
+INNER JOIN [products] p ON oi.[product_id] = p.[product_id]
+LEFT JOIN [categories] cat ON p.[category_id] = cat.[category_id]
+LEFT JOIN [reviews] r ON p.[product_id] = r.[product_id] 
+    AND c.[customer_id] = r.[customer_id]
+WHERE o.[order_date] >= %
+    AND p.[price] > %
+    AND c.[country] IN (%)
+```
 
-### Examples
+**Key Points:**
 
-#### Scout Rules List
+- **Exact line break formatting** preserved between original and pattern
+- **Multiple wildcards** (%) used for flexible matching on dates, prices, and countries
+- **Comments preserved** to maintain exact structure
+- **All spacing and indentation** must match exactly
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation1.jpg"
-  alt="Triggers and Actions"
-/>
+**❌ Reverse case - if original query HAS line breaks, rule pattern WITHOUT line breaks will also NOT work:**
 
-#### Kill long Queries
+- **Original query** (with line breaks): Won't match a single-line pattern
+- **Rule pattern** (single line): Won't catch queries that have line breaks
+- **Solution**: Pattern formatting must match the actual query formatting exactly
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation2.png"
-  alt="Triggers and Actions"
-/>
+---
+
+#### **Best Practices for Copy-Paste Query Patterns**
+
+**Recommended Sources** (ensures exact spacing and formatting):
+
+- Copy query from **Rapydo Application** (Query workspace | Dashboard slowest reports)
+- Copy from **Query Logs/Monitoring**:
+  - Database query logs
+  - Application logs
+  - Query monitoring tools (Rapydo)
+  - Database audit trails
+
+**Why This Matters:** This ensures the **exact spacing and formatting** that will actually be executed, preventing pattern matching failures due to formatting differences.
+
+---
+
+### **DB name**
+
+Triggers based on which database is being accessed.
+
+**Interface:** Dropdown (shows databases from selected instances only)
+
+- **Search Function**: Find specific databases quickly
+- **Select All**: Choose all databases that are in the dropdown
+
+**Operator Options:**
+
+- **In**: Trigger for activity on specified databases
+- **Not In**: Trigger for activity NOT on specified databases
+
+**Examples:**
+
+- **Production protection**: In "production_db" - Apply strict rules to production
+- **Development monitoring**: Not In "dev_db,test_db" - Monitor non-dev access
+
+---
+
+### **User**
+
+Triggers based on which database user is running processes.
+
+**Interface:** Dropdown (shows users from selected instances only)
+
+- **Search Function**: Find specific users quickly
+- **Select All**: Choose all users that are in the dropdown
+- **Shared Indicators**: Shows users shared across instances
+
+**Operator Options:**
+
+- **In**: Trigger for processes from specified users
+- **Not In**: Trigger for processes NOT from specified users
+
+**Examples:**
+
+- **Admin monitoring**: In "admin,dba,root" - Enhanced monitoring for privileged users
+- **Service account limits**: In "app_user,backup_user" - Control service account activity
+
+---
+
+### **Ip**
+
+Triggers based on source IP address of database connections.
+
+**Interface:** Manual text entry
+**Multiple IPs:** Use comma separation: `192.168.1.100,10.0.0.5` (no spaces)
+
+**Operator Options:**
+
+- **In**: Trigger for processes from specified IPs
+- **Not In**: Trigger for processes NOT from specified IPs
+
+**Value:** Enter IP addresses
+
+**Examples:**
+
+- **Security monitoring**: In "192.168.1.100" - Watch specific suspicious IP
+- **External access**: Not In "10.0.0.0/8" - Monitor external connections
+- **Office restriction**: In "203.0.113.0/24" - Limit to office network
+
+---
+
+### **Custom script**
+
+The custom script trigger allows you to write any SQL query that returns results. If the query returns data, the rule is considered "triggered" and the associated action will be executed.
+
+**Interface:** Manual text entry
+
+**Value:** Enter SQL query that returns data when condition is met
+
+**Use Cases:**
+
+- Complex business rules requiring multiple conditions
+- Integration with external monitoring systems
+- Custom performance metrics
+- Time-based rules (business hours, maintenance windows)
+
+---
+
+## **3. Actions**
+
+Choose what happens when trigger conditions are met:
+
+### **Connection Management**
+
+- **Kill connection**: Terminate the specific connections matching the trigger criteria. Uses `pg_terminate_backend` for PostgreSQL and `CALL mysql.rds_kill` for MySQL.
+- **Kill idle connections**: Terminate idle connections when connection utilization exceeds threshold. Includes rate limit per cycle.
+- **Kill query**: Difference from Kill Connection: Terminates only the running query, keeps the connection alive. Uses `pg_cancel_backend` for PostgreSQL and `CALL mysql.rds_kill_query` for MySQL.
+
+### **Traffic Control**
+
+- **Rate limit**: Limit the amount of concurrent operations for matching the trigger criteria
+- **No action**: Monitor only (log events & email - without taking action)
+
+### **Analysis**
+
+- **RCA**: Analyzes slow queries and provides root cause analysis by email.
+- **Custom script**: SQL statement(s) executed when rule triggers
+
+---
+
+## **4. Notifications**
+
+**Toggle:** Active/Inactive
+**Email:** Enter notification email address
+
+Send email notifications if configured
+
+---
+
+## Multiple Trigger Logic (Important)
+
+**AND Relationship:** All triggers must be true simultaneously
+
+**Example:**
+
+- Trigger 1: Connection idle time \> 300 seconds
+- Trigger 2: User In "test_user,dev_user"
+- Trigger 3: IP In "192.168.1.100"
+
+**Result:** Only triggers for connections that are idle over 5 minutes AND from test/dev users AND from IP 192.168.1.100 - all at the same time.
