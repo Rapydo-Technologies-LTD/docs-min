@@ -1,0 +1,2026 @@
+---
+title: "Rapydo Database Schema"
+description: "The Rapydo database schema is designed for comprehensive database monitoring and performance analysis. Built on TimescaleDB, it captures high-frequency snapshots of database processes, system metrics, and lock contentions to provide deep insights into database health and query performance patterns."
+---
+
+# **Rapydo Database Schema Documentation**
+
+## **Introduction to the Rapydo Database Schema**
+
+The Rapydo database schema is designed for comprehensive database monitoring and performance analysis. Built on TimescaleDB, it captures high-frequency snapshots of database processes, system metrics, and lock contentions to provide deep insights into database health and query performance patterns.
+
+## **Core Monitoring Tables**
+
+### **process_history**
+
+The process_history table is the foundation of real-time monitoring, capturing snapshots of all running database processes every 1-2 seconds.
+
+**What it contains:**
+
+●      Point-in-time snapshots of every active database connection
+
+●      Query runtime at each snapshot moment
+
+●      Connection and user information
+
+●      Normalized SQL query hashes for pattern matching
+
+**How to query it:**
+
+sql
+
+_-- Find currently long-running queries_
+
+`SELECT`
+
+`    db_identifier,`
+
+`    sampled_at,`
+
+`    user,`
+
+`    db,`
+
+`    time as runtime_seconds,`
+
+`    current_statement`
+
+`FROM process_history`
+
+`WHERE sampled_at > NOW() - INTERVAL '10 minutes'`
+
+`  AND time > 60  -- Running longer than 1 minute`
+
+`ORDER BY time DESC;`
+
+ 
+
+_-- Track query progression over time_
+
+SELECT
+
+    digest_text_md5,
+
+    sampled_at,
+
+    time,
+
+    connection_id
+
+FROM process_history
+
+WHERE digest_text_md5 = 'your-query-hash'
+
+  AND sampled_at \> NOW() - INTERVAL '1 hour'
+
+ORDER BY sampled_at;
+
+**Key insight:** Long-running queries appear multiple times with increasing time values, allowing you to track query progression and identify hangs.
+
+### **aggregated_process_history**
+
+This table provides complete query execution records with calculated start and end times, derived from process_history snapshots.
+
+**What it contains:**
+
+●      One record per completed query execution
+
+●      Calculated start times and total execution duration
+
+●      Complete query lifecycle information
+
+●      Database and user context for each execution
+
+**How to query it:**
+
+sql
+
+_-- Find slowest queries in the last 24 hours_
+
+SELECT
+
+    digest_text_md5,
+
+    MAX(time) as max_duration,
+
+    AVG(time) as avg_duration,
+
+    COUNT(\*) as execution_count
+
+FROM aggregated_process_history
+
+WHERE start_time \>= NOW() - INTERVAL '24 hours'
+
+GROUP BY digest_text_md5
+
+ORDER BY max_duration DESC
+
+LIMIT 20;
+
+ 
+
+_-- Analyze query patterns by user_
+
+SELECT
+
+    user,
+
+    db,
+
+    COUNT(\*) as query_count,
+
+    AVG(time) as avg_duration
+
+FROM aggregated_process_history
+
+WHERE start_time \>= CURRENT_DATE
+
+GROUP BY user, db
+
+ORDER BY avg_duration DESC;
+
+**Key insight:** Each query execution appears exactly once, making this ideal for historical analysis and performance trending.
+
+### **digest_lookup**
+
+A centralized lookup table that maps query pattern hashes to their full SQL text, eliminating duplicate storage across the system.
+
+**What it contains:**
+
+●      MD5 hashes of normalized SQL statements
+
+●      Full normalized SQL text with parameters removed
+
+●      Last seen timestamp for each pattern
+
+**How to query it:**
+
+sql
+
+_-- Get readable SQL for query patterns_
+
+SELECT
+
+    d.digest_text as full_query,
+
+    a.max_duration,
+
+    a.execution_count
+
+FROM (
+
+    SELECT
+
+        digest_text_md5,
+
+        MAX(time) as max_duration,
+
+        COUNT(\*) as execution_count
+
+    FROM aggregated_process_history
+
+    WHERE start_time \>= NOW() - INTERVAL '24 hours'
+
+    GROUP BY digest_text_md5
+
+) a
+
+JOIN digest_lookup d ON a.digest_text_md5 = d.digest_text_md5
+
+ORDER BY a.max_duration DESC;
+
+ 
+
+_-- Find queries containing specific keywords_
+
+SELECT
+
+    digest_text_md5,
+
+    digest_text,
+
+    last_seen
+
+FROM digest_lookup
+
+WHERE digest_text ILIKE '%customer%'
+
+  AND last_seen \> NOW() - INTERVAL '7 days';
+
+**Key insight:** This table is essential for making query hashes human-readable and should always be joined when displaying SQL text.
+
+## **System Performance Tables**
+
+### **database_metric**
+
+Captures infrastructure and database performance metrics at one-minute intervals.
+
+**What it contains:**
+
+●      CPU, memory, and storage utilization
+
+●      Connection counts and utilization percentages
+
+●      IOPS performance metrics
+
+●      Database engine and instance information
+
+**How to query it:**
+
+sql
+
+_-- Current database health overview_
+
+SELECT
+
+    db_identifier,
+
+    cpu_utilization,
+
+    connection_utilization_percentage,
+
+    freeable_memory_percent,
+
+    maximum_query_duration
+
+FROM database_metric
+
+WHERE sampled_at \> NOW() - INTERVAL '5 minutes'
+
+ORDER BY cpu_utilization DESC;
+
+ 
+
+_-- Resource utilization trends_
+
+SELECT
+
+    DATE_TRUNC('hour', sampled_at) as hour,
+
+    db_identifier,
+
+    AVG(cpu_utilization) as avg_cpu,
+
+    MAX(connection_utilization_percentage) as max_connections,
+
+    AVG(freeable_memory_percent) as avg_free_memory
+
+FROM database_metric
+
+WHERE sampled_at \>= NOW() - INTERVAL '24 hours'
+
+GROUP BY hour, db_identifier
+
+ORDER BY hour DESC;
+
+**Key insight:** Use for capacity planning, performance trend analysis, and real-time health monitoring.
+
+## **Lock Analysis Tables**
+
+### **transaction_lock**
+
+Tracks row-level and transaction lock contentions between database sessions.
+
+**What it contains:**
+
+●      Detailed information about blocking and waiting sessions
+
+●      Transaction IDs and wait times
+
+●      SQL statements being executed during contention
+
+●      User and database context for both sessions
+
+**How to query it:**
+
+sql
+
+_-- Current lock contentions_
+
+SELECT
+
+    db_identifier,
+
+    waiting_age_secs,
+
+    locking_user,
+
+    waiting_user,
+
+    locking_thread_current_query,
+
+    waiting_query
+
+FROM transaction_lock
+
+WHERE sampled_at \> NOW() - INTERVAL '10 minutes'
+
+ORDER BY waiting_age_secs DESC;
+
+ 
+
+_-- Lock contention patterns_
+
+SELECT
+
+    locking_user,
+
+    waiting_user,
+
+    COUNT(\*) as contention_events,
+
+    AVG(waiting_age_secs) as avg_wait_time
+
+FROM transaction_lock
+
+WHERE sampled_at \>= NOW() - INTERVAL '24 hours'
+
+GROUP BY locking_user, waiting_user
+
+HAVING COUNT(\*) \> 5
+
+ORDER BY avg_wait_time DESC;
+
+### **metadata_lock**
+
+Monitors schema-level lock contentions, particularly useful for DDL operations.
+
+**How to query it:**
+
+sql
+
+_-- Schema lock analysis_
+
+SELECT
+
+    db_identifier,
+
+    waiting_age_secs,
+
+    locking_thread_current_query as blocking_ddl,
+
+    waiting_query as waiting_operation
+
+FROM metadata_lock
+
+WHERE sampled_at \> NOW() - INTERVAL '30 minutes'
+
+ORDER BY waiting_age_secs DESC;
+
+### **deadlock_history**
+
+Records complete deadlock events with both structured and raw diagnostic information.
+
+**What it contains:**
+
+●      Structured JSON representation of deadlock graphs
+
+●      Raw database deadlock logs
+
+●      Timestamp and database context
+
+**How to query it:**
+
+sql
+
+_-- Recent deadlock events_
+
+SELECT
+
+    timestamp,
+
+    db_identifier,
+
+    parsed_data-\>\>'transaction_count' as transactions_involved
+
+FROM deadlock_history
+
+WHERE timestamp \> NOW() - INTERVAL '24 hours'
+
+ORDER BY timestamp DESC;
+
+ 
+
+_-- Deadlock frequency analysis_
+
+SELECT
+
+    db_identifier,
+
+    DATE_TRUNC('hour', timestamp) as hour,
+
+    COUNT(\*) as deadlock_count
+
+FROM deadlock_history
+
+WHERE timestamp \> NOW() - INTERVAL '7 days'
+
+GROUP BY db_identifier, hour
+
+ORDER BY deadlock_count DESC;
+
+## **Pre-computed Dashboard Tables**
+
+### **yesterdays_stats**
+
+Pre-formatted daily statistics ready for dashboard consumption.
+
+**What it contains:**
+
+●      Yesterday's database performance metrics
+
+●      Pre-rounded numbers and calculated percentages
+
+●      Database rankings and comparisons
+
+**How to query it:**
+
+sql
+
+_-- Dashboard-ready database performance summary_
+
+SELECT
+
+    db_identifier,
+
+    db,
+
+    total_queries,
+
+    avg_duration,
+
+    max_duration,
+
+    unique_queries
+
+FROM yesterdays_stats
+
+ORDER BY max_duration DESC;
+
+### **yesterdays_top_queries**
+
+Top 200 slowest query patterns from the previous day with complete SQL text.
+
+**What it contains:**
+
+●      Ranked slow queries with full SQL text
+
+●      Performance statistics (min/max/avg duration)
+
+●      Execution counts and query rankings
+
+**How to query it:**
+
+sql
+
+_-- Top slow queries from yesterday_
+
+SELECT
+
+    query_rank,
+
+    db_identifier,
+
+    query_text,
+
+    max_duration,
+
+    avg_duration,
+
+    query_count
+
+FROM yesterdays_top_queries
+
+WHERE db_identifier = 'your-database'
+
+  AND query_rank \<= 10
+
+ORDER BY query_rank;
+
+## **Materialized Views for Analytics**
+
+### **mv_top_queries_summary**
+
+TimescaleDB continuous aggregate providing daily query pattern statistics.
+
+**How to query it:**
+
+sql
+
+_-- Query performance trends over multiple days_
+
+SELECT
+
+    bucket_day,
+
+    query_hash,
+
+    max_duration,
+
+    avg_duration,
+
+    query_count
+
+FROM mv_top_queries_summary
+
+WHERE bucket_day \>= CURRENT_DATE - 7
+
+  AND db_identifier = 'your-database'
+
+  AND max_duration \> 10
+
+ORDER BY bucket_day DESC, max_duration DESC;
+
+## **Best Practices for Querying**
+
+### **Time-based Queries**
+
+Always use appropriate time filters to leverage TimescaleDB's time partitioning:
+
+sql
+
+_-- Good: Uses time partitioning_
+
+WHERE sampled_at \> NOW() - INTERVAL '24 hours'
+
+ 
+
+_-- Better: Uses date boundaries for chunk alignment_
+
+WHERE start_time \>= CURRENT_DATE - 1
+
+### **Multi-tenant Queries**
+
+Always filter by db_identifier when analyzing specific databases:
+
+sql
+
+_-- Efficient multi-tenant query_
+
+WHERE db_identifier = 'prod-db-01'
+
+  AND sampled_at \> NOW() - INTERVAL '1 hour'
+
+### **Joining with digest_lookup**
+
+Always join with digest_lookup when you need readable SQL text:
+
+sql
+
+_-- Standard pattern for readable queries_
+
+SELECT
+
+    d.digest_text,
+
+    a.max_duration,
+
+    a.query_count
+
+FROM aggregated_process_history a
+
+JOIN digest_lookup d ON a.digest_text_md5 = d.digest_text_md5
+
+WHERE a.start_time \>= NOW() - INTERVAL '24 hours'
+
+## **Common Analysis Patterns**
+
+### **Performance Troubleshooting**
+
+sql
+
+_-- Find queries that suddenly became slow_
+
+WITH recent_perf AS (
+
+    SELECT digest_text_md5, AVG(time) as recent_avg
+
+    FROM aggregated_process_history
+
+    WHERE start_time \>= NOW() - INTERVAL '24 hours'
+
+    GROUP BY digest_text_md5
+
+),
+
+historical_perf AS (
+
+    SELECT digest_text_md5, AVG(time) as historical_avg
+
+    FROM aggregated_process_history
+
+    WHERE start_time \>= NOW() - INTERVAL '7 days'
+
+      AND start_time \< NOW() - INTERVAL '24 hours'
+
+    GROUP BY digest_text_md5
+
+)
+
+SELECT
+
+    d.digest_text,
+
+    r.recent_avg,
+
+    h.historical_avg,
+
+    (r.recent_avg / h.historical_avg) as performance_ratio
+
+FROM recent_perf r
+
+JOIN historical_perf h ON r.digest_text_md5 = h.digest_text_md5
+
+JOIN digest_lookup d ON r.digest_text_md5 = d.digest_text_md5
+
+WHERE r.recent_avg \> h.historical_avg \* 2  _-- 2x slower than usual_
+
+ORDER BY performance_ratio DESC;
+
+This schema provides comprehensive visibility into database operations, from real-time monitoring to historical trend analysis, enabling proactive database management and performance optimization.
+
+**# Database Schema Information**
+
+ 
+
+This document describes key tables and views in a database monitoring system built on PostgreSQL with TimescaleDB. Each component follows the same documentation pattern for consistency.
+
+ 
+
+**## Core Monitoring Tables**
+
+ 
+
+**### Table: process_history**
+
+**Purpose**: Captures 1-second snapshots of all running database processes.
+
+**Primary Key**: (db_identifier, sampled_at, connection_id, thd_id, event_id)
+
+**Key Fields**:
+
+- `db_identifier`: Database instance identifier
+
+- `sampled_at`: Snapshot timestamp
+
+- `connection_id`, `thd_id`: Connection and thread identifiers
+
+- `time`: How long query has been running (seconds) at snapshot time
+
+- `digest_text_md5`: Hash of normalized query for pattern matching
+
+**Storage**: TimescaleDB hypertable (1 day chunks, 1000 partitions)
+
+**Usage**: Long-running queries appear multiple times with increasing `time` values.
+
+**Key Characteristic**: Source table for real-time monitoring and aggregations.
+
+ 
+
+**### Table: aggregated_process_history**
+
+**Purpose**: Complete query execution log with start-to-finish information.
+
+**Primary Key**: (start_time, db_identifier, connection_id, thd_id, event_id)
+
+**Key Fields**:
+
+- `start_time`, `end_time`: Query start/end timestamps
+
+- `time`: Total execution time
+
+- `db_identifier`, `connection_id`, `thd_id`: Instance and connection identifiers
+
+- `digest_text_md5`: Query pattern hash
+
+**Derivation**: Created from process_history with ETL calculating start time as: sampled_at - (time \* INTERVAL '1 second')
+
+**Key Characteristic**: Each query execution appears as exactly one row.
+
+ 
+
+**### Table: digest_lookup**
+
+**Purpose**: Central store of query patterns, mapping MD5 hashes to full query text.
+
+**Primary Key**: `digest_text_md5`
+
+**Key Fields**:
+
+- `digest_text_md5`: Hash of normalized SQL
+
+- `digest_text`: Full normalized SQL text
+
+- `last_seen`: When pattern was last observed
+
+**Usage**: Referenced by other tables to avoid storing duplicate query text.
+
+ 
+
+**### Table: database_configuration**
+
+**Purpose**: Tracks database configuration changes over time.
+
+**Primary Key**: (db_identifier, sampled_at)
+
+**Key Fields**:
+
+- `db_identifier`: Database instance identifier
+
+- `sampled_at`: Configuration capture timestamp
+
+- `config` (jsonb): Complete configuration as JSON
+
+**Configuration Content**: Engine settings, memory allocations, connection limits, etc.
+
+**Usage**: Configuration change detection and historical tracking.
+
+ 
+
+**### Table: metadata_lock**
+
+**Purpose**: Tracks schema-level lock contentions.
+
+**Primary Key**: (sampled_at, db_identifier, locking_pid, locking_owner_event_id, waiting_pid, waiting_owner_event_id)
+
+**Key Fields**:
+
+- `sampled_at`: Contention observation timestamp
+
+- `waiting_age_secs`: Duration waiting session has been blocked
+
+- Locking fields: Details about session holding the lock
+
+- Waiting fields: Details about blocked session
+
+**Usage**: Diagnosing schema-level blocking issues (DDL operations).
+
+ 
+
+**### Table: transaction_lock**
+
+**Purpose**: Tracks row-level and transaction lock contentions.
+
+**Primary Key**: (sampled_at, db_identifier, locking_pid, locking_trx_id, waiting_pid, waiting_trx_id)
+
+**Key Fields**:
+
+- `sampled_at`: Contention observation timestamp
+
+- `waiting_started`: When waiting began
+
+- `waiting_age_secs`: Duration of waiting
+
+- Locking/waiting fields: Similar to metadata_lock
+
+- Transaction IDs: `locking_trx_id`, `waiting_trx_id`
+
+**Usage**: Identifying row-level blocking between transactions.
+
+ 
+
+**### Table: deadlock_history**
+
+**Purpose**: Records database deadlock events.
+
+**Primary Key**: (id, timestamp, db_identifier)
+
+**Key Fields**:
+
+- `timestamp`: When deadlock was detected
+
+- `parsed_data` (jsonb): Structured deadlock information
+
+- `raw_data`: Original deadlock log
+
+**Usage**: Post-mortem analysis of deadlock patterns and affected transactions.
+
+ 
+
+**## Performance Aggregation Layer**
+
+ 
+
+**### Materialized View: mv_daily_db_stats**
+
+**Purpose**: Pre-computes daily performance metrics by database.
+
+**Key Fields**:
+
+- `bucket_day`: Daily time bucket
+
+- `db_identifier`, `db`: Database identifiers
+
+- `avg_duration`, `total_queries`, `min/max_duration`: Performance metrics
+
+**Implementation**: TimescaleDB continuous aggregate with 4-day retention.
+
+ 
+
+**### Materialized View: mv_top_queries_summary**
+
+**Purpose**: Pre-computes daily statistics for each query pattern.
+
+**Key Fields**:
+
+- `bucket_day`, `db_identifier`, `db`: Time and database identifiers
+
+- `query_hash`: Digest hash identifying the query pattern
+
+- `min/avg/max_duration`, `query_count`: Performance metrics
+
+**Implementation**: TimescaleDB continuous aggregate with max_duration index.
+
+ 
+
+**### Materialized View: mv_top_queries_detail**
+
+**Purpose**: Preserves individual query execution details.
+
+**Key Fields**:
+
+- Time and DB identifiers
+
+- `query_hash`: Query pattern identifier
+
+- `start_time`, `duration`: Specific execution details
+
+**Usage**: Deep analysis of execution variability for query patterns.
+
+ 
+
+**## Dashboard Optimization Layer**
+
+ 
+
+**### Table: yesterdays_stats**
+
+**Purpose**: Pre-formatted snapshot of yesterday's database metrics.
+
+**Schema**:
+
+- `date`: Statistics date (yesterday)
+
+- `db_identifier`, `db`: Database identifiers
+
+- Performance metrics: Pre-formatted and rounded
+
+**Refresh**: Via custom function that rebuilds table daily.
+
+ 
+
+**### Table: yesterdays_top_queries**
+
+**Purpose**: Top 200 slowest query patterns from yesterday.
+
+**Schema**:
+
+- Date and database identifiers
+
+- `query_hash`, `query_text`: Query identification
+
+- Performance metrics
+
+- `query_rank`: Position within top 200
+
+**Usage**: Instant access to slowest queries for dashboards.
+
+ 
+
+**### Table: yesterdays_top_queries_detail**
+
+**Purpose**: Individual executions of yesterday's slowest queries.
+
+**Schema**: Similar to summary but with execution-specific timestamps.
+
+**Usage**: Detailed analysis of timing variations.
+
+ 
+
+**### Procedure: refresh_all_daily_stats**
+
+**Purpose**: Coordinates refresh of all snapshot tables.
+
+**Implementation**: Calls individual refresh functions in sequence.
+
+**Scheduling**: Runs twice daily for redundancy.
+
+ 
+
+**### Materialized View: mv_top_queries_summary**
+
+ 
+
+**Purpose**: A TimescaleDB continuous aggregate that pre-computes daily summary statistics for each unique query pattern across database instances, supporting query performance analysis.
+
+ 
+
+**Refresh Policy**:
+
+- Automatic refresh every day
+
+- Covers data between 3 days ago and 1 day ago
+
+- Real-time aggregation enabled (not materialized_only)
+
+- Retention policy: 4 days
+
+ 
+
+**Key Fields**:
+
+- `bucket_day` (timestamp): Daily time bucket from aggregated_process_history.start_time
+
+- `db_identifier` (text): Database instance identifier
+
+- `db` (text): Database name accessed
+
+- `query_hash` (text): The digest_text_md5 hash identifying the normalized query
+
+- `max_duration` (float): Maximum query execution time in seconds
+
+- `min_duration` (float): Minimum query execution time in seconds
+
+- `avg_duration` (float): Average query execution time in seconds
+
+- `query_count` (integer): Total number of executions of this query pattern
+
+ 
+
+**Source Data**:
+
+- Aggregates data from the aggregated_process_history table
+
+- Filters for leaf events only (is_leaf = true)
+
+- Groups by day, db_identifier, database name, and query hash
+
+ 
+
+**Indexes**:
+
+- `idx_mv_top_queries_summary_duration`: Index on max_duration DESC for efficient ranking of slowest queries
+
+ 
+
+**Usage Patterns**:
+
+- Finding the most resource-intensive query patterns
+
+- Tracking query performance trends over time
+
+- Identifying problematic database instances
+
+- Supporting query optimization efforts
+
+ 
+
+**### Materialized View: mv_top_queries_detail**
+
+ 
+
+**Purpose**: A TimescaleDB continuous aggregate that preserves individual query execution details for deeper performance analysis, while maintaining efficient storage and retrieval.
+
+ 
+
+**Refresh Policy**:
+
+- Automatic refresh every day
+
+- Covers data between 3 days ago and 1 day ago
+
+- Real-time aggregation enabled (not materialized_only)
+
+- Retention policy: 4 days
+
+ 
+
+**Key Fields**:
+
+- `bucket_day` (timestamp): Daily time bucket from aggregated_process_history.start_time
+
+- `db_identifier` (text): Database instance identifier
+
+- `db` (text): Database name accessed
+
+- `query_hash` (text): The digest_text_md5 hash identifying the normalized query
+
+- `start_time` (timestamp): When the query execution began
+
+- `duration` (float): Execution time in seconds for this specific execution
+
+ 
+
+**Source Data**:
+
+- Stores specific executions from aggregated_process_history
+
+- Filters for leaf events only (is_leaf = true)
+
+- Preserves individual execution timing data
+
+ 
+
+**Indexes**:
+
+- `idx_mv_top_queries_detail_duration`: Index on duration DESC for efficient access to slowest individual executions
+
+ 
+
+**Usage Patterns**:
+
+- Detailed analysis of performance variability for specific query patterns
+
+- Investigating outlier execution times
+
+- Correlating slow queries with specific time periods
+
+- Identifying parameter-sensitive query patterns
+
+ 
+
+**### Table: yesterdays_top_queries**
+
+ 
+
+**Purpose**: A daily snapshot table that stores the previous day's top 200 slowest query patterns per database, with complete query text and formatted metrics for immediate dashboard use.
+
+ 
+
+**Schema**:
+
+- `date` (date): The date of the statistics (always yesterday)
+
+- `db_identifier` (text): Database instance identifier
+
+- `db` (text): Database name accessed
+
+- `query_hash` (text): The digest_text_md5 hash identifying the normalized query
+
+- `query_text` (text): Full normalized SQL text of the query (from digest_lookup)
+
+- `max_duration` (numeric): Maximum execution time rounded to 2 decimal places
+
+- `min_duration` (numeric): Minimum execution time rounded to 2 decimal places
+
+- `avg_duration` (numeric): Average execution time rounded to 2 decimal places
+
+- `query_count` (integer): Total number of executions
+
+- `query_rank` (integer): Rank of this query within its database by max_duration (1 = slowest)
+
+ 
+
+**Data Source**:
+
+- Derived from mv_top_queries_summary joined with digest_lookup
+
+- Limited to top 200 slowest queries per database
+
+- Contains only the previous day's data
+
+- Numbers are pre-formatted (rounded to 2 decimal places)
+
+ 
+
+**Refresh Mechanism**:
+
+- Refreshed by the refresh_yesterdays_top_queries() function
+
+- Function drops and recreates the table daily
+
+- Uses a temporary table (tmp_top_queries) for atomic replacement
+
+- Automatically joined with digest_lookup to include full query text
+
+ 
+
+**Sample Data** (from screenshot):
+
+- Shows ranked queries (UPDATE, SELECT statements)
+
+- Includes actual SQL text with parameter placeholders
+
+- Metrics like max_duration (64.00s), avg_duration (54.32s)
+
+- Query execution counts (467)
+
+- Rankings (1-200)
+
+ 
+
+**### Table: yesterdays_top_queries_detail**
+
+ 
+
+**Purpose**: A daily snapshot table that stores individual executions of the previous day's 200 slowest queries per database, providing execution-level details for deeper analysis.
+
+ 
+
+**Schema**:
+
+- `date` (date): The date of the statistics (always yesterday)
+
+- `db_identifier` (text): Database instance identifier
+
+- `db` (text): Database name accessed
+
+- `query_hash` (text): The digest_text_md5 hash identifying the normalized query
+
+- `query_text` (text): Full normalized SQL text of the query (from digest_lookup)
+
+- `start_time` (timestamp): Exact time when this specific execution began
+
+- `duration` (numeric): Execution time in seconds, rounded to 2 decimal places
+
+- `query_rank` (integer): Rank of this execution within its database by duration (1 = slowest)
+
+ 
+
+**Data Source**:
+
+- Derived from mv_top_queries_detail joined with digest_lookup
+
+- Limited to 200 slowest individual executions per database
+
+- Contains only the previous day's data
+
+- Execution times are pre-formatted (rounded to 2 decimal places)
+
+ 
+
+**Refresh Mechanism**:
+
+- Refreshed by the refresh_yesterdays_top_queries_detail() function
+
+- Function drops and recreates the table daily
+
+- Uses a temporary table (tmp_top_queries_detail) for atomic replacement
+
+ 
+
+**Usage Patterns**:
+
+- Detailed analysis of specific slow query executions
+
+- Investigating time-of-day patterns for query performance
+
+- Finding individual problematic executions for queries that usually perform well
+
+ 
+
+**### Procedure: refresh_all_daily_stats**
+
+ 
+
+**Purpose**: A comprehensive scheduled procedure that refreshes all daily statistics tables in a coordinated manner, ensuring dashboard data consistency.
+
+ 
+
+**Implementation**:
+
+- PL/pgSQL stored procedure
+
+- Calls each individual refresh function:
+
+ \* refresh_yesterdays_stats()
+
+ \* refresh_yesterdays_top_queries()
+
+ \* refresh_yesterdays_top_queries_detail()
+
+- Scheduled to run twice daily via pg_cron (at 00:05 and 00:30)
+
+- Includes retry logic for resilience
+
+ 
+
+**Refresh Flow**:
+
+1. Refreshes basic database metrics (yesterdays_stats)
+
+2. Refreshes top query summaries (yesterdays_top_queries)
+
+3. Refreshes detailed query executions (yesterdays_top_queries_detail)
+
+ 
+
+**Benefits**:
+
+- Ensures all dashboard tables are refreshed in a coordinated manner
+
+- Multiple scheduled runs provide redundancy in case of failures
+
+- Centralizes refresh logic for easier maintenance
+
+- Atomically updates all tables without dashboard disruption
+
+ 
+
+**Relationship to Continuous Aggregates**:
+
+- Works alongside TimescaleDB's automatic continuous aggregate policies
+
+- The procedure handles the final step of creating dashboard-ready snapshot tables
+
+- Creates an additional caching layer optimized for dashboard presentation
+
+ 
+
+**Purpose**: Records database deadlock events with both structured and raw information, enabling analysis of deadlock patterns, root causes, and affected transactions.
+
+ 
+
+**Primary Key**: Compound (id, timestamp, db_identifier)
+
+- `id` (integer): Auto-incrementing identity column, not nullable
+
+- `timestamp` (timestamptz): When the deadlock was detected, not nullable
+
+- `db_identifier` (text): Database instance identifier, not nullable
+
+ 
+
+**Content Fields**:
+
+- `parsed_data` (jsonb): Structured representation of the deadlock graph as JSON, not nullable
+
+- `raw_data` (text): Original raw deadlock event log from the database, not nullable
+
+ 
+
+**Storage**: TimescaleDB hypertable
+
+- Time dimension: timestamp (chunk interval: 1 day)
+
+- Secondary dimension: db_identifier (1000 partitions)
+
+- Retention policy: 7 days
+
+- Compression: Enabled after 4 days
+
+- Compression strategy:
+
+ \* Segment by: db_identifier
+
+ \* Order by: timestamp DESC
+
+- Autovacuum: Disabled (managed by TimescaleDB)
+
+ 
+
+**Indexes**:
+
+- `idx_deadlock_history_timestamp`: Index on timestamp DESC (for time-based queries)
+
+- `idx_deadlock_history_db_identifier`: Index on db_identifier (for instance-specific queries)
+
+- `idx_deadlock_history_parsed_data`: GIN index on the JSONB parsed_data field (for complex queries into the JSON structure)
+
+ 
+
+**JSONB Structure** (parsed_data typically includes):
+
+- Transaction identifiers involved in the deadlock
+
+- Waiting-for relationships between transactions
+
+- SQL statements that were executing in each transaction
+
+- Tables and rows involved in the lock conflict
+
+- Lock types that caused the conflict (X, S, IX, IS, etc.)
+
+- User information for transactions involved
+
+- Transaction isolation levels
+
+- Wait times before the deadlock was detected
+
+ 
+
+**Usage Patterns**:
+
+- Post-mortem analysis of deadlock events
+
+- Identifying application patterns that lead to deadlocks
+
+- Finding tables frequently involved in deadlocks
+
+- Correlating deadlocks with specific queries or transaction patterns
+
+- Creating alerts for increasing deadlock frequencies
+
+- Monitoring effectiveness of deadlock reduction strategies
+
+ 
+
+**Key Benefits**:
+
+- Preserves both structured (parsed_data) and unstructured (raw_data) forms of deadlock information
+
+- Enables complex querying through JSONB operators on parsed_data
+
+- Maintains historical record of deadlocks for pattern analysis
+
+- Supports joining with other monitoring tables based on timestamp and db_identifier
+
+ 
+
+**Common Investigation Queries**:
+
+\`\`\`sql
+
+-- Find tables most frequently involved in deadlocks
+
+SELECT
+
+ jsonb_path_query(parsed_data, '\$.transactions[\*].relations[\*]') AS table_name,
+
+ COUNT(\*) AS deadlock_count
+
+FROM deadlock_history
+
+WHERE timestamp \> NOW() - INTERVAL '7 days'
+
+GROUP BY table_name
+
+ORDER BY deadlock_count DESC;
+
+ 
+
+-- Find deadlocks involving a specific table
+
+SELECT
+
+ timestamp,
+
+ db_identifier,
+
+ parsed_data
+
+FROM deadlock_history
+
+WHERE
+
+ timestamp \> NOW() - INTERVAL '7 days' AND
+
+ parsed_data::text ILIKE '%customer%'
+
+ORDER BY timestamp DESC;
+
+ 
+
+-- Analyze deadlock frequency over time
+
+SELECT
+
+ date_trunc('hour', timestamp) AS hour,
+
+ db_identifier,
+
+ COUNT(\*) AS deadlock_count
+
+FROM deadlock_history
+
+WHERE timestamp \> NOW() - INTERVAL '7 days'
+
+GROUP BY hour, db_identifier
+
+ORDER BY hour DESC, deadlock_count DESC;
+
+\`\`\`
+
+ 
+
+**Relationships**:
+
+- Can be correlated with transaction_lock and metadata_lock tables based on timestamp
+
+- Often analyzed alongside process_history to understand the database state during deadlocks
+
+- May be joined with database_metric to correlate deadlocks with system load conditions
+
+ 
+
+**Deadlock vs. Lock Contention**:
+
+- Deadlocks represent circular wait conditions automatically detected by the database
+
+- Distinct from lock contentions (in transaction_lock and metadata_lock tables) which show active blocking
+
+- Deadlocks trigger automatic transaction aborts by the database engine
+
+- This table captures the post-mortem data after deadlock detection and resolution
+
+ 
+
+**Purpose**: High-frequency monitoring table that captures point-in-time snapshots of all running database processes at 1-second intervals.
+
+ 
+
+**Primary Key**: Compound (db_identifier, sampled_at, connection_id, thd_id, event_id)
+
+ 
+
+**Core Fields**:
+
+- `db_identifier` (text): Database instance identifier (multi-tenant architecture)
+
+- `sampled_at` (timestamptz): Exact moment when the snapshot was captured
+
+- `connection_id` (integer): Database connection identifier
+
+- `thd_id` (integer): Thread ID for the database process
+
+ 
+
+**Process Metadata**:
+
+- `client_host` (text): Client hostname/IP address
+
+- `user` (text): Database username
+
+- `db` (text): Database being accessed
+
+- `command` (text): SQL command type (Query, Update, etc.)
+
+- `state` (text): Process state at snapshot time
+
+- `time` (integer): Query runtime in seconds as of snapshot time
+
+- `resource_group` (text): Resource allocation group
+
+ 
+
+**Query Information**:
+
+- `current_statement` (text): SQL statement executing at snapshot time
+
+- `sql_text` (text): Complete SQL text
+
+- `digest_text` (text): Normalized SQL statement (parameters removed)
+
+- `digest_text_md5` (text): Hash of normalized statement for pattern matching
+
+- `object_name` (text): Database object being accessed
+
+ 
+
+**Event Tracking**:
+
+- `event_id` (integer): Unique event identifier
+
+- `nesting_event_id` (integer): Parent event ID for nested operations
+
+- `nesting_time` (double precision): Time spent in nested operations
+
+ 
+
+**Storage**: TimescaleDB hypertable
+
+- Time dimension: sampled_at (chunk interval: 1 day)
+
+- Secondary dimension: db_identifier (1000 partitions)
+
+- Retention policy: Likely 1-3 days based on ETL stored procedure
+
+ 
+
+**Query Patterns**:
+
+- Time-series aggregation for concurrent load visualization
+
+- Point-in-time analysis for seeing exactly what was running at specific moments
+
+- Input for ETL process that populates aggregated_process_history
+
+ 
+
+**Volume Characteristics**:
+
+- Very high write volume (1 snapshot per second per running query)
+
+- Snapshots include all active database processes
+
+- Long-running queries appear multiple times with increasing "time" values
+
+ 
+
+**### Table: aggregated_process_history**
+
+ 
+
+**Purpose**: Complete query history log that provides full lifecycle information for each query execution.
+
+ 
+
+**Primary Key**: Compound (start_time, db_identifier, connection_id, thd_id, event_id)
+
+ 
+
+**Time Range**:
+
+- `start_time` (timestamptz): Calculated query start time
+
+- `end_time` (timestamptz): Time when query execution completed
+
+- `time` (integer): Total execution time in seconds
+
+ 
+
+**Connection Information**:
+
+- `db_identifier` (text): Database instance identifier
+
+- `connection_id` (integer): Database connection identifier
+
+- `thd_id` (integer): Thread ID
+
+- `client_host` (text): Client hostname/IP
+
+- `user` (text): Database username
+
+- `db` (text): Database name accessed
+
+ 
+
+**Query Classification**:
+
+- `command` (text): Command type executed
+
+- `state` (text): Final query state
+
+- `digest_text_md5` (text): Hash for identifying query patterns
+
+- `resource_group` (text): Resource group classification
+
+ 
+
+**Query Details**:
+
+- `sql_text` (text): Full SQL statement executed
+
+- `object_name` (text): Primary object accessed
+
+- `event_id` (integer): Unique event identifier
+
+- `nesting_event_id` (integer): Parent event ID for nested operations
+
+- `nesting_time` (double precision): Time spent in nested operations
+
+- `is_leaf` (boolean): Flag for leaf-level operations
+
+ 
+
+**Storage**: TimescaleDB hypertable
+
+- Time dimension: start_time (chunk interval: 1 day)
+
+- Secondary dimension: db_identifier (1000 partitions)
+
+- Retention policy: Likely weeks to months for historical analysis
+
+ 
+
+**Derivation Process**:
+
+- Created by ETL procedure that runs periodically
+
+- Reconstructs query lifecycles from process_history snapshots
+
+- Uses sophisticated start time calculation: sampled_at - (time \* INTERVAL '1 second')
+
+- Selects most recent sample for each unique query execution
+
+- Excludes system processes (Connect, Daemon, event_scheduler)
+
+- Only processes meaningful queries (with digest_text_md5 or nesting_event_id)
+
+ 
+
+**Usage Patterns**:
+
+- Historical query analysis and performance troubleshooting
+
+- Slow query identification and optimization
+
+- User activity auditing and pattern analysis
+
+- Trend analysis of query execution times
+
+- Resource usage analysis by query type, user, and database
+
+ 
+
+**Key Characteristic**:
+
+Each complete query execution is represented by exactly one row, containing the calculated start time, observed end time, and derived total execution time.
+
+ 
+
+**### Table: digest_lookup**
+
+ 
+
+**Purpose**: Centralized lookup table that provides a single storage location for SQL query patterns, mapping compact MD5 hashes to their corresponding full normalized SQL text to optimize storage across the system.
+
+ 
+
+**Primary Key**: `digest_text_md5` (text)
+
+ 
+
+**Core Fields**:
+
+- `digest_text_md5` (text): MD5 hash of the normalized SQL statement
+
+- `digest_text` (text): Full normalized SQL statement with parameters removed
+
+- `last_seen` (timestamptz): Most recent timestamp when this query pattern was observed
+
+ 
+
+**Storage**:
+
+- Regular PostgreSQL table (not a TimescaleDB hypertable)
+
+- Indexed on digest_text_md5 for efficient lookups
+
+ 
+
+**ETL Process**:
+
+- Populated by a scheduled procedure `populate_digest_lookup`)
+
+- Extracts unique digest patterns from `process_history`
+
+- Processes data in hourly batches for performance
+
+- Uses sophisticated upsert logic:
+
+ \* For new patterns: Inserts hash, full text, and last seen timestamp
+
+ \* For existing patterns: Updates only the last_seen timestamp if newer
+
+- Only processes records where both digest_text and digest_text_md5 are not null
+
+- Tracks progress with logging for operational monitoring
+
+ 
+
+**Update Frequency**:
+
+- Runs periodically to capture new query patterns
+
+- Processes data from the latest recorded timestamp up to the newest available data
+
+- Batches data processing in 1-hour increments for efficiency and progress tracking
+
+ 
+
+**Usage Patterns**:
+
+- Primarily a reference table joined to other monitoring tables
+
+- Acts as a compression mechanism by storing large text strings only once
+
+- Provides historical record of all observed query patterns
+
+- Facilitates query categorization and pattern analysis
+
+ 
+
+**Data Characteristics**:
+
+- Each unique SQL pattern appears exactly once
+
+- Growing table, but at a much slower rate than transaction tables
+
+- New entries added only when previously unseen query patterns are observed
+
+- Last_seen date continuously updated for existing patterns when observed again
+
+ 
+
+**Relationships**:
+
+- Referenced by process_history.digest_text_md5
+
+- Referenced by aggregated_process_history.digest_text_md5
+
+- May be referenced by other monitoring/analytics tables
+
+ 
+
+**Key Benefit**:
+
+- Dramatically reduces storage requirements by eliminating duplicate storage of potentially large text strings
+
+- Enables efficient queries while maintaining full SQL text availability when needed
+
+- Creates a canonical reference for each unique query pattern in the system
+
+ 
+
+**### Table: database_metric**
+
+ 
+
+**Purpose**: Core time-series table that stores performance metrics for database instances at one-minute intervals, combining both RDS CloudWatch metrics and calculated database statistics.
+
+ 
+
+**Primary Key**: Compound (db_identifier, sampled_at)
+
+ 
+
+**Database Identification**:
+
+- `db_identifier` (text): Database instance identifier
+
+- `sampled_at` (timestamptz): Timestamp when the metrics were collected
+
+- `engine` (text): Database engine type (e.g., MySQL, PostgreSQL)
+
+- `engine_version` (text): Version of the database engine
+
+- `instance_class` (text): RDS instance type (e.g., db.m5.large)
+
+- `availability_zone` (text): AWS availability zone where the instance is running
+
+ 
+
+**Resource Utilization Metrics**:
+
+- `cpu_utilization` (double precision): Percentage of CPU utilized
+
+- `freeable_memory` (double precision): Amount of available memory in bytes
+
+- `freeable_memory_percent` (double precision): Percentage of total memory available
+
+- `swap_usage` (double precision): Amount of swap space being used
+
+- `read_iops` (double precision): Read operations per second
+
+- `write_iops` (double precision): Write operations per second
+
+- `free_local_storage_percent` (double precision): Percentage of storage space available
+
+- `provisioned_iops` (double precision): IOPS provisioned for the instance
+
+ 
+
+**Connection Metrics**:
+
+- `connections_count` (double precision): Current number of active connections
+
+- `max_connections` (double precision): Maximum allowed connections
+
+- `connection_utilization_percentage` (double precision): Percentage of connection capacity used
+
+- `sleeping` (double precision): Number of sleeping/idle connections
+
+- `running` (double precision): Number of running/active connections
+
+- `maximum_query_duration` (double precision): Duration of the longest-running query
+
+- `users_count` (double precision): Number of unique database users with active connections
+
+- `hosts_count` (double precision): Number of unique client hosts connected
+
+- `db_count` (double precision): Number of unique databases being accessed
+
+- `waits_count` (double precision): Number of sessions in a wait state
+
+- `parameter_groups` (text): RDS parameter groups applied to the instance
+
+ 
+
+**Storage**: TimescaleDB hypertable
+
+- Time dimension: sampled_at (chunk interval: 1 day)
+
+- Secondary dimension: db_identifier (1000 partitions)
+
+- Retention policy: Likely months to years for trend analysis
+
+ 
+
+**Collection Process**:
+
+- Collected at one-minute intervals
+
+- Combines metrics from AWS CloudWatch (for OS/instance metrics)
+
+- Augments with calculated metrics from database queries
+
+- Provides a unified view of both infrastructure and database performance
+
+ 
+
+**Usage Patterns**:
+
+- Source data for real-time monitoring
+
+- Used by ETL processes to generate hourly aggregates
+
+- Detailed analysis of short-term performance issues
+
+- Input for alerting on critical thresholds
+
+ 
+
+**Visualization Usage**:
+
+- Powers CPU usage charts in dashboards
+
+- Supports connection usage monitoring
+
+- Used for IOPS tracking and analysis
+
+- Database instance health monitoring
+
+ 
+
+**### Table: hourly_database_metrics**
+
+ 
+
+**Purpose**: Aggregated time-series table that provides hourly summaries of database performance metrics for efficient dashboard visualization and trend analysis.
+
+ 
+
+**Primary Key**: Compound (db_identifier, hour)
+
+ 
+
+**Time and Identification**:
+
+- `hour` (timestamptz): Hour timestamp (truncated to hour precision)
+
+- `db_identifier` (text): Database instance identifier
+
+- `instance_class` (text): RDS instance type (e.g., db.m5.large)
+
+- `engine_version` (text): Version of the database engine
+
+ 
+
+**CPU Utilization Metrics**:
+
+- `min_cpu_utilization` (float8): Minimum CPU utilization percentage within the hour
+
+- `avg_cpu_utilization` (float8): Average CPU utilization percentage within the hour
+
+- `max_cpu_utilization` (float8): Maximum CPU utilization percentage within the hour
+
+ 
+
+**Connection Utilization Metrics**:
+
+- `min_connection_utilization` (float8): Minimum connection utilization percentage
+
+- `avg_connection_utilization` (float8): Average connection utilization percentage
+
+- `max_connection_utilization` (float8): Maximum connection utilization percentage
+
+ 
+
+**I/O Performance Metrics**:
+
+- `min_iops` (float8): Minimum total I/O operations per second
+
+- `avg_iops` (float8): Average total I/O operations per second
+
+- `max_iops` (float8): Maximum total I/O operations per second
+
+- `avg_read_iops` (float8): Average read operations per second
+
+- `avg_write_iops` (float8): Average write operations per second
+
+ 
+
+**Storage**: Likely TimescaleDB hypertable
+
+- Time dimension: hour (chunk interval: likely weeks or months)
+
+- Secondary dimension: db_identifier
+
+- Retention policy: Likely years for long-term trend analysis
+
+ 
+
+**ETL Process**:
+
+- Derived from the database_metric table
+
+- Aggregated hourly to reduce data volume and improve query performance
+
+- Calculates min/avg/max statistics for key metrics within each hour
+
+- Used to optimize dashboard performance for long time ranges
+
+ 
+
+**Common Analysis Queries**:
+
+\`\`\`sql
+
+-- Instance resize identification (underutilized instances)
+
+SELECT
+
+ db_identifier,
+
+ instance_class,
+
+ engine_version,
+
+ MAX(max_cpu_utilization) AS max_cpu
+
+FROM
+
+ hourly_database_metrics
+
+WHERE
+
+ hour \> NOW() - INTERVAL '30 days'
+
+GROUP BY
+
+ db_identifier,
+
+ instance_class,
+
+ engine_version
+
+HAVING
+
+ MAX(max_cpu_utilization) \< 40
+
+ORDER BY
+
+ MAX(max_cpu_utilization);
+
+ 
+
+-- High CPU utilization identification (potential performance issues)
+
+SELECT
+
+ db_identifier,
+
+ instance_class,
+
+ engine_version,
+
+ MAX(max_cpu) AS max_cpu
+
+FROM
+
+ hourly_database_metric
+
+WHERE
+
+ hour \>= DATETIME('now', '-30 day')
+
+GROUP BY
+
+ db_identifier,
+
+ instance_class,
+
+ engine_version
+
+HAVING
+
+ MAX(max_cpu) \> 80;
+
+\`\`\`
+
+ 
+
+**Query Patterns**:
+
+- Dashboard queries selecting top N instances by resource utilization
+
+- Time-series visualizations covering 12+ hour periods
+
+- Performance trend analysis across multiple instances
+
+- Hourly comparison of resource utilization patterns
+
+ 
+
+**Key Benefits**:
+
+- Dramatically improves dashboard query performance
+
+- Reduces data scanning for common visualization patterns
+
+- Enables efficient long-term trend analysis
+
+- Supports comparison of performance across multiple instances
+
+- Facilitates capacity planning and cost optimization
