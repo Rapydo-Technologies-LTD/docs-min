@@ -75,7 +75,7 @@ _-- Track query progression over time_
 
 `ORDER BY sampled_at;`
 
-**Key insight:** Long-running queries appear multiple times with increasing time values, allowing you to track query progression and identify hangs.
+**Key insight:**Long-running queries appear multiple times with increasing time values, allowing you to track query progression and identify hangs.
 
 ### **aggregated_process_history**
 
@@ -138,7 +138,7 @@ _-- Analyze query patterns by user_
 
 `ORDER BY avg_duration DESC;`
 
-**Key insight:** Each query execution appears exactly once, making this ideal for historical analysis and performance trending.
+**Key insight:**Each query execution appears exactly once, making this ideal for historical analysis and performance trending.
 
 ### **digest_lookup**
 
@@ -204,7 +204,7 @@ _-- Find queries containing specific keywords_
 
 `  AND last_seen > NOW() - INTERVAL '7 days';`
 
-**Key insight:** This table is essential for making query hashes human-readable and should always be joined when displaying SQL text.
+**Key insight:**This table is essential for making query hashes human-readable and should always be joined when displaying SQL text.
 
 ## **System Performance Tables**
 
@@ -269,7 +269,7 @@ _-- Resource utilization trends_
 
 `ORDER BY hour DESC;`
 
-**Key insight:** Use for capacity planning, performance trend analysis, and real-time health monitoring.
+**Key insight:**Use for capacity planning, performance trend analysis, and real-time health monitoring.
 
 ## **Lock Analysis Tables**
 
@@ -767,11 +767,11 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-## ** Performance Aggregation Layer**
+## **Performance Aggregation Layer**
 
  
 
-### ** Materialized View: mv_daily_db_stats**
+### **Materialized View: mv_daily_db_stats**
 
 **Purpose**: Pre-computes daily performance metrics by database.
 
@@ -785,7 +785,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Materialized View: mv_top_queries_summary**
+### **Materialized View: mv_top_queries_summary**
 
 **Purpose**: Pre-computes daily statistics for each query pattern.
 
@@ -799,7 +799,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Materialized View: mv_top_queries_detail**
+### **Materialized View: mv_top_queries_detail**
 
 **Purpose**: Preserves individual query execution details.
 
@@ -813,11 +813,11 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-## ** Dashboard Optimization Layer**
+## **Dashboard Optimization Layer**
 
  
 
-### ** Table: yesterdays_stats**
+### **Table: yesterdays_stats**
 
 **Purpose**: Pre-formatted snapshot of yesterday's database metrics.
 
@@ -831,7 +831,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Table: yesterdays_top_queries**
+### **Table: yesterdays_top_queries**
 
 **Purpose**: Top 200 slowest query patterns from yesterday.
 
@@ -846,7 +846,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Table: yesterdays_top_queries_detail**
+### **Table: yesterdays_top_queries_detail**
 
 **Purpose**: Individual executions of yesterday's slowest queries.
 
@@ -856,7 +856,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Procedure: refresh_all_daily_stats**
+### **Procedure: refresh_all_daily_stats**
 
 **Purpose**: Coordinates refresh of all snapshot tables.
 
@@ -866,7 +866,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Materialized View: mv_top_queries_summary**
+### **Materialized View: mv_top_queries_summary**
 
  
 
@@ -919,7 +919,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Materialized View: mv_top_queries_detail**
+### **Materialized View: mv_top_queries_detail**
 
  
 
@@ -970,7 +970,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Table: yesterdays_top_queries**
+### **Table: yesterdays_top_queries**
 
  
 
@@ -1011,7 +1011,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**Sample Data** (from screenshot):
+**Sample Data**(from screenshot):
 
 - Shows ranked queries (UPDATE, SELECT statements)
 - Includes actual SQL text with parameter placeholders
@@ -1021,7 +1021,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Table: yesterdays_top_queries_detail**
+### **Table: yesterdays_top_queries_detail**
 
  
 
@@ -1067,7 +1067,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-### ** Procedure: refresh_all_daily_stats**
+### **Procedure: refresh_all_daily_stats**
 
  
 
@@ -1155,7 +1155,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**JSONB Structure** (parsed_data typically includes):
+**JSONB Structure**(parsed_data typically includes):
 
 - Transaction identifiers involved in the deadlock
 - Waiting-for relationships between transactions
@@ -1340,7 +1340,7 @@ sql
 
  
 
-### ** Table: aggregated_process_history**
+### **Table: aggregated_process_history**
 
  
 
@@ -1426,7 +1426,7 @@ Each complete query execution is represented by exactly one row, containing the 
 
  
 
-### ** Table: digest_lookup**
+### **Table: digest_lookup**
 
  
 
@@ -1511,7 +1511,7 @@ Each complete query execution is represented by exactly one row, containing the 
 
  
 
-### ** Table: database_metric**
+### **Table: database_metric**
 
  
 
@@ -1598,7 +1598,7 @@ Each complete query execution is represented by exactly one row, containing the 
 
  
 
-### ** Table: hourly_database_metrics**
+### **Table: hourly_database_metrics**
 
  
 
