@@ -635,13 +635,13 @@ sql
 
 This schema provides comprehensive visibility into database operations, from real-time monitoring to historical trend analysis, enabling proactive database management and performance optimization.
 
-**# Database Schema Information**
+# **Database Schema Information**
 
 This document describes key tables and views in a database monitoring system built on PostgreSQL with TimescaleDB. Each component follows the same documentation pattern for consistency.
 
-**## Core Monitoring Tables**
+## **Core Monitoring Tables**
 
-**### Table: process_history**
+### **Table: process_history**
 
 **Purpose**: Captures 1-second snapshots of all running database processes.
 
@@ -663,7 +663,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: aggregated_process_history**
+### **Table: aggregated_process_history**
 
 **Purpose**: Complete query execution log with start-to-finish information.
 
@@ -682,7 +682,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: digest_lookup**
+### **Table: digest_lookup**
 
 **Purpose**: Central store of query patterns, mapping MD5 hashes to full query text.
 
@@ -698,7 +698,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: database_configuration**
+### **Table: database_configuration**
 
 **Purpose**: Tracks database configuration changes over time.
 
@@ -716,7 +716,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: metadata_lock**
+### **Table: metadata_lock**
 
 **Purpose**: Tracks schema-level lock contentions.
 
@@ -733,7 +733,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: transaction_lock**
+### **Table: transaction_lock**
 
 **Purpose**: Tracks row-level and transaction lock contentions.
 
@@ -751,7 +751,7 @@ This document describes key tables and views in a database monitoring system bui
 
  
 
-**### Table: deadlock_history**
+### **Table: deadlock_history**
 
 **Purpose**: Records database deadlock events.
 
