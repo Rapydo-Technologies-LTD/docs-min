@@ -33,7 +33,13 @@
 						"dashboard/dashboard_view"
 					]
 				},
-				{
+      			{
+					"group": "Rapydo Database Schema",
+					"pages": [
+						"schema/rapydo_database_schema"
+					]
+				},	
+                {
 					"group": "Automation",
 					"pages": [
 						"automation/introduction",
