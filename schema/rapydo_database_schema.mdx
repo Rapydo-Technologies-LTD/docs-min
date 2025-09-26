@@ -17,13 +17,10 @@ The process_history table is the foundation of real-time monitoring, capturing s
 
 **What it contains:**
 
-●      Point-in-time snapshots of every active database connection
-
-●      Query runtime at each snapshot moment
-
-●      Connection and user information
-
-●      Normalized SQL query hashes for pattern matching
+- Point-in-time snapshots of every active database connection
+- Query runtime at each snapshot moment
+- Connection and user information
+- Normalized SQL query hashes for pattern matching
 
 **How to query it:**
 
@@ -83,13 +80,10 @@ This table provides complete query execution records with calculated start and e
 
 **What it contains:**
 
-●      One record per completed query execution
-
-●      Calculated start times and total execution duration
-
-●      Complete query lifecycle information
-
-●      Database and user context for each execution
+- One record per completed query execution
+- Calculated start times and total execution duration
+- Complete query lifecycle information
+- Database and user context for each execution
 
 **How to query it:**
 
@@ -146,11 +140,9 @@ A centralized lookup table that maps query pattern hashes to their full SQL text
 
 **What it contains:**
 
-●      MD5 hashes of normalized SQL statements
-
-●      Full normalized SQL text with parameters removed
-
-●      Last seen timestamp for each pattern
+- MD5 hashes of normalized SQL statements
+- Full normalized SQL text with parameters removed
+- Last seen timestamp for each pattern
 
 **How to query it:**
 
@@ -214,13 +206,10 @@ Captures infrastructure and database performance metrics at one-minute intervals
 
 **What it contains:**
 
-●      CPU, memory, and storage utilization
-
-●      Connection counts and utilization percentages
-
-●      IOPS performance metrics
-
-●      Database engine and instance information
+- CPU, memory, and storage utilization
+- Connection counts and utilization percentages
+- IOPS performance metrics
+- Database engine and instance information
 
 **How to query it:**
 
@@ -279,13 +268,10 @@ Tracks row-level and transaction lock contentions between database sessions.
 
 **What it contains:**
 
-●      Detailed information about blocking and waiting sessions
-
-●      Transaction IDs and wait times
-
-●      SQL statements being executed during contention
-
-●      User and database context for both sessions
+- Detailed information about blocking and waiting sessions
+- Transaction IDs and wait times
+- SQL statements being executed during contention
+- User and database context for both sessions
 
 **How to query it:**
 
@@ -369,11 +355,9 @@ Records complete deadlock events with both structured and raw diagnostic informa
 
 **What it contains:**
 
-●      Structured JSON representation of deadlock graphs
-
-●      Raw database deadlock logs
-
-●      Timestamp and database context
+- Structured JSON representation of deadlock graphs
+- Raw database deadlock logs
+- Timestamp and database context
 
 **How to query it:**
 
@@ -423,11 +407,9 @@ Pre-formatted daily statistics ready for dashboard consumption.
 
 **What it contains:**
 
-●      Yesterday's database performance metrics
-
-●      Pre-rounded numbers and calculated percentages
-
-●      Database rankings and comparisons
+- Yesterday's database performance metrics
+- Pre-rounded numbers and calculated percentages
+- Database rankings and comparisons
 
 **How to query it:**
 
@@ -459,11 +441,9 @@ Top 200 slowest query patterns from the previous day with complete SQL text.
 
 **What it contains:**
 
-●      Ranked slow queries with full SQL text
-
-●      Performance statistics (min/max/avg duration)
-
-●      Execution counts and query rankings
+- Ranked slow queries with full SQL text
+- Performance statistics (min/max/avg duration)
+- Execution counts and query rankings
 
 **How to query it:**
 
@@ -1138,11 +1118,8 @@ This document describes key tables and views in a database monitoring system bui
 - Retention policy: 7 days
 - Compression: Enabled after 4 days
 - Compression strategy:
-
- \* Segment by: db_identifier
-
- \* Order by: timestamp DESC
-
+- Segment by: db_identifier
+- Order by: timestamp DESC
 - Autovacuum: Disabled (managed by TimescaleDB)
 
  
@@ -1459,11 +1436,8 @@ Each complete query execution is represented by exactly one row, containing the 
 - Extracts unique digest patterns from `process_history`
 - Processes data in hourly batches for performance
 - Uses sophisticated upsert logic:
-
- \* For new patterns: Inserts hash, full text, and last seen timestamp
-
- \* For existing patterns: Updates only the last_seen timestamp if newer
-
+- For new patterns: Inserts hash, full text, and last seen timestamp
+- For existing patterns: Updates only the last_seen timestamp if newer
 - Only processes records where both digest_text and digest_text_md5 are not null
 - Tracks progress with logging for operational monitoring
 
@@ -1500,6 +1474,7 @@ Each complete query execution is represented by exactly one row, containing the 
 - Referenced by process_history.digest_text_md5
 - Referenced by aggregated_process_history.digest_text_md5
 - May be referenced by other monitoring/analytics tables
+
  
 
 **Key Benefit**:
