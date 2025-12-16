@@ -56,7 +56,7 @@
 				},
 
 				{
-					"group": "Database Details",
+					"group": "Instances",
 					"pages": [
 						"db-details/introduction_to_database_details",
 						"db-details/database_details_view"
