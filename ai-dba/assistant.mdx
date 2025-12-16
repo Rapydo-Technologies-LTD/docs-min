@@ -1,0 +1,89 @@
+# Assistant
+
+Your intelligent database assistant that answers questions about your entire database fleet using natural language.
+
+## Overview
+
+AI DBA Chat transforms how you interact with your databases. Instead of writing complex queries or navigating multiple monitoring dashboards, simply ask questions in plain English. The AI analyzes your fleet's monitoring data and returns insights with actionable recommendations.
+
+## Getting Started
+
+Access Assistant from the left navigation panel under **AI DBA → Assistant**. The interface is straightforward: type your question in the input field and press enter or click the send button. Each question is handled independently—there's no conversation memory between messages, so include all relevant context in each question.
+
+**Example first question:**
+> "Show me the top 3 longest queries from the last day"
+
+## Key Features
+
+### Natural Language Queries
+
+Ask questions the way you would ask a senior DBA. The AI understands context and database terminology across both MySQL and PostgreSQL environments.
+
+**What you can ask:**
+
+- "Are there any performance issues in my databases over the last 24 hours?"
+- "How many locks do we have today on the fleet?"
+- "Which instances have the highest connection count right now?"
+- "Show me slow queries affecting the payments table"
+- "What's causing high CPU on our production database?"
+
+### Rich Analysis Results
+
+Every response includes multiple components designed to give you complete context:
+
+**Findings Summary** — A clear statement of what the AI discovered, including affected instances, timeframes, and severity indicators.
+
+**The Query** — When relevant, the AI displays the actual SQL being analyzed, formatted for readability.
+
+**Root Cause Analysis** — The AI doesn't just show you what's slow—it explains why. Expect insights about missing indexes, locking issues, inefficient joins, or resource constraints.
+
+**Recommendations** — Prioritized action items with specific steps. Each recommendation includes the reasoning and, where applicable, the exact SQL commands to implement fixes.
+
+**Follow-up Questions** — Suggested next steps to continue your investigation. Click any suggestion to drill deeper into the issue.
+
+### Results & Visualizations Panel
+
+For queries that return data, a side panel displays interactive results:
+
+**Data Tables** — Searchable result sets showing query details, execution metrics, user information, and state. Export or copy data directly from this view.
+
+**Charts & Graphs** — Visual representations of fleet-wide metrics including:
+- Lock counts by database instance
+- Average wait times across the fleet
+- Distribution breakdowns (lock types, query types, etc.)
+- Time-series trends
+
+**Quick Stats** — At-a-glance metrics like total fleet locks, instance counts, and aggregate values.
+
+### Action Buttons
+
+Each analysis includes action buttons to move from insight to resolution:
+
+- **Result Table** — View the raw data behind the analysis
+- **Copy Generated Query** — Get the SQL that Assistant used, ready to paste into your own tools
+- **Execute Query** — Opens the **Execute Query** tool (Execute Query in the left panel) with the generated SQL pre-loaded. From there you can review the query, modify it if needed, save it as a template for future use, or run it manually against RapydoDB
+
+
+## Best Practices
+
+**Be specific about timeframes** — "Last 24 hours" or "since yesterday" helps Assistant focus on relevant data.
+
+**Name your instances** — If you're investigating a specific server, include its identifier in your question.
+
+**Include full context** — Since each question is independent, provide all necessary details in a single message rather than relying on follow-ups.
+
+
+
+## How It Works
+
+Assistant queries RapydoDB—our dedicated monitoring database where all your fleet's performance data is stored. This architecture means:
+
+**Zero impact on production** — Assistant never connects to your RDS instances directly. All analysis runs against pre-collected monitoring data, so your production databases experience no additional load.
+
+**Fast responses** — Because the data is already aggregated in RapydoDB, queries return quickly regardless of your fleet size.
+
+**Safe exploration** — Ask as many questions as you want. There's no risk of accidentally running expensive queries against production.
+
+## Supported Databases
+
+Assistant analyzes monitoring data from all database engines supported by Rapydo, including MySQL and PostgreSQL environments. The AI automatically adjusts its analysis and recommendations based on the database engine.
