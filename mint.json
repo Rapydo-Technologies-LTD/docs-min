@@ -75,6 +75,13 @@
 						"throttling/introduction_to_throttling",
 						"throttling/query_throttling_view"
 					]
+				},
+				{
+					"group": "AI DBA",
+					"pages": [
+						"ai-dba/assistant",
+						"ai-dba/query-analysis"
+					]
 				}
 			]
 		},
