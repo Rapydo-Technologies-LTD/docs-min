@@ -1,0 +1,144 @@
+Deep-dive AI-powered analysis that examines your queries, execution plans, and schema metadata to identify root causes of performance issues.
+
+## Overview
+
+Query Analysis goes beyond simple monitoring. It connects directly to your database instances to generate execution plans and collect metadata, then uses multiple AI analysts to examine the evidence and provide actionable optimization recommendations.
+
+## Getting Started
+
+Access Query Analysis from the left navigation panel under **AI DBA → Query Analysis**.
+
+### Analysis Settings
+
+Configure your analysis with these required fields:
+
+**Analysis Mode** — Select the type of execution plan analysis:
+- **Explain Only (Basic)** — Generates an estimated execution plan based on table statistics and metadata. Fast and safe for production use since the query is not actually executed.
+- **Explain Analyze (Advanced)** — Actually executes the query and measures real performance metrics. Provides accurate row counts and timing data instead of estimates. Use with caution on production systems as the query will run.
+
+**Server** — Select the database instance to analyze from your monitored fleet.
+
+**Database** — Choose the specific database on that server.
+
+**Schema** — Optionally select a schema to provide additional context.
+
+**SQL Query** — Enter or paste the query you want to analyze. The editor provides syntax highlighting for readability.
+
+Click **Analysis** to begin.
+
+## Ways to Access Query Analysis
+
+### Direct Entry
+
+Navigate to Query Analysis and manually enter your server, database, and SQL query.
+
+### From Query Workspace
+
+When viewing queries in any query workspace (like Process count history or other query lists), hover over any query row to reveal the **Analyze Query** button. Clicking it opens Query Analysis with all required fields automatically populated—server, database, and query are pre-filled and ready for one-click analysis.
+
+### From Dashboard
+
+Dashboard widgets like "Longest Query" display your slowest queries. Each query row includes an **Analyze Query** button that opens Query Analysis with all fields pre-filled for immediate analysis.
+
+## Analysis Results
+
+After clicking Analysis, the system connects to your database, generates an execution plan, collects metadata, and runs AI analysis. Results include:
+
+### Analysis Configuration
+
+A summary header showing:
+- Server name
+- Analysis mode
+- Database
+- Timestamp
+- The SQL query being analyzed (syntax highlighted)
+
+### Analysis Summary
+
+The AI provides a confidence-rated summary of findings. Each issue category includes clear explanations of what's wrong and why it matters.
+
+**Example findings:**
+
+**Inefficient per-row function call**
+- Using pg_sleep(4) creates deliberate 4-second delay per row
+- Function dominates performance regardless of other optimizations
+- Affects every row processed during query execution
+
+**Missing indexes for query optimization**
+- No indexes on join columns employeeNumber and customerNumber
+- Forces expensive nested loops processing billions of combinations
+- Sequential scans required for all table access operations
+
+**Under-optimized join order algorithm**
+- Processes large tables before applying selective payment filter
+- Creates massive intermediate results exploding to billions of rows
+- Should start with filtered payments then smallest tables
+
+**Outdated statistical information**
+- Employees and payments tables never analyzed despite autovacuum enabled
+- Optimizer uses default assumptions creating unrealistic row estimates
+- Inconsistent statistics across tables affects join decisions
+
+### Supporting Evidence Overview
+
+Detailed technical evidence backing each finding. This section shows exactly what the AI observed in the execution plan and metadata:
+
+- Specific function impacts (e.g., "Query includes `pg_sleep(4)` function call in SELECT clause, introducing deliberate 4-second delay per row processed")
+- Join analysis with row calculations (e.g., "Join condition `e.employeeNumber = c.salesRepEmployeeNumber` forces nested loop with 56,078 × 249,856 row comparisons, creating 3.08 million intermediate results")
+- Cost analysis (e.g., "Query plan shows astronomical cost of 2.6 billion units due to nested loop joins processing 6.17 billion estimated row combinations")
+- Statistics status (e.g., "Tables employees and payments show 'Statistics were never analyzed' despite having autovacuum analyze enabled")
+- Join order recommendations (e.g., "Optimal approach should start with most selective filtered dataset—payments with 1,503 rows after WHERE amount < 1000")
+
+### Metadata Panel
+
+Click **Metadata** to view the raw technical details:
+
+**Execution Plan** — The complete JSON execution plan from the database, showing node types, costs, row estimates, and filter conditions.
+
+**Query Metadata** — Additional context including:
+- **Table Statistics** — Row counts, analyze status, vacuum history for each table involved in the query
+- **Indexes** — Existing indexes on affected tables (or confirmation that none exist)
+- **Table Schema** — Column definitions with data types and constraints for all tables
+- **Partitions** — Partition status for each table
+- **Column Cardinality** — Distinct value counts, null percentages, average width, correlation, and histogram availability for key columns
+
+## Key Features
+
+### Confidence Ratings
+
+Each analysis includes a confidence indicator (e.g., "High confidence") showing how certain the AI is about its findings based on the available evidence.
+
+### Multiple Analysis Perspectives
+
+The AI examines queries from several angles simultaneously: execution efficiency, index utilization, statistics freshness, and schema design.
+
+### Actionable Output
+
+Findings are presented as specific, actionable items rather than generic advice. Instead of "consider adding an index," you get "Missing index on employeenumber for efficient single-row lookups."
+
+### Re-analyze
+
+After making changes to your database (like adding an index), click **Reanalyze** to run a fresh analysis and verify the improvement.
+
+
+
+## Example Workflow
+
+1. Dashboard shows an UPDATE query taking 88 seconds
+2. Hover over that query row and click **Analyze Query**
+3. Query Analysis opens with everything pre-filled
+4. Click **Analysis**
+5. AI identifies: missing index on employeenumber, outdated statistics
+6. Review the execution plan showing sequential scan of 56,019 rows
+7. Create the recommended index
+8. Click **Reanalyze** to confirm improvement
+
+## Best Practices
+
+**Start with problematic queries** — Focus on queries identified by Assistant or Dashboard insights rather than analyzing everything.
+
+**Use the right mode for your environment** — Use Explain Only (Basic) for production databases since it only estimates the plan without executing the query. Use Explain Analyze (Advanced) on test environments when you need actual execution metrics.
+
+**Review the metadata** — The execution plan and table statistics often reveal issues the summary might not emphasize.
+
+**Reanalyze after changes** — Always verify that your optimizations had the intended effect.
