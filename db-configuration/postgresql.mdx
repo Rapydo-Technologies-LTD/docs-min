@@ -1,1 +1,15 @@
+# Configure PostgreSQL Settings
+
+Configure the following in the DB Parameter Group (RDS) or `postgresql.conf` and then restart the server for the settings to take effect.
+
+## PostgreSQL 12+
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `shared_preload_libraries` | `pg_stat_statements` | Required. Enables the pg_stat_statements extension for query tracking. |
+| `pg_stat_statements.track` | `all` | Recommended. Tracks all statements including those inside functions. Default is `top` (top-level statements only). |
+| `pg_stat_statements.max` | `10000` | Maximum number of statements tracked. Increase if you have many unique queries. |
+| `track_activity_query_size` | `4096` | Controls the maximum length of query text stored in `pg_stat_activity` and `pg_stat_statements`. Default is `1024`. |
+
+> **Note:** After configuring `shared_preload_libraries`, you must restart PostgreSQL. Then run `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;` in each database you want to monitor.
 
