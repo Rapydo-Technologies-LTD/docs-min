@@ -27,6 +27,13 @@
 			"pages": [
 				"introduction",
 				{
+					"group": "Database Configuration",
+					"pages": [
+						"database-configuration/postgresql_settings",
+						"database-configuration/mysql_settings"
+					]
+				},
+				{
 					"group": "Dashboard",
 					"pages": [
 						"dashboard/introduction_to_dashboard",
