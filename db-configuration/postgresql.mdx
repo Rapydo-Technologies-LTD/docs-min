@@ -13,3 +13,39 @@ Configure the following in the DB Parameter Group (RDS) or `postgresql.conf` and
 
 > **Note:** After configuring `shared_preload_libraries`, you must restart PostgreSQL. Then run `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;` in each database you want to monitor.
 
+## Optional: Extensions for Enhanced RCA
+
+The following extensions improve Rapydo's Root Cause Analysis capabilities. Rapydo will work without them, but with reduced RCA functionality.
+
+### HypoPG (No Restart Required)
+
+Allows Rapydo to test hypothetical indexes without actually creating them, enabling smarter index recommendations.
+
+**Installation:**
+
+Run in each database you want to monitor:
+```sql
+CREATE EXTENSION IF NOT EXISTS hypopg;
+```
+
+> **Note:** HypoPG is safe for production — it creates virtual indexes in memory only during your session, without affecting actual data or consuming disk space. Available on Amazon RDS.
+
+### pg_hint_plan (Requires Restart)
+
+Allows Rapydo to test alternative execution plans and validate optimization recommendations.
+
+**Installation:**
+
+1. Add `pg_hint_plan` to `shared_preload_libraries`:
+   ```
+   shared_preload_libraries = 'pg_stat_statements,pg_hint_plan'
+   ```
+
+2. Restart PostgreSQL
+
+3. Run in each database you want to monitor:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS pg_hint_plan;
+   ```
+
+> **Note:** pg_hint_plan is safe for production — it only affects queries that explicitly use hints. Available on Amazon RDS.
