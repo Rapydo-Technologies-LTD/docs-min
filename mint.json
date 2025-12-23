@@ -29,8 +29,8 @@
 				{
 					"group": "Database Configuration",
 					"pages": [
-						"database-configuration/postgresql_settings",
-						"database-configuration/mysql_settings"
+						"db-configuration/postgresql",
+						"db-configuration/mysql"
 					]
 				},
 				{
