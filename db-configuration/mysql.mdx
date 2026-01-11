@@ -1,31 +1,38 @@
 # Configure MySQL Settings
-
 Configure the following in the DB Parameter Group and then restart the server for the settings to take effect.
 
 ## MySQL 8.0+
-
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `performance_schema` | `1` | Required. Enables the Performance Schema. |
 | `max_digest_length` | `4096` | Required for collection of larger queries. Increases the size of SQL digest text in `events_statements_*` tables. If left at the default value, queries longer than `1024` characters will not be collected. |
 | `performance_schema_max_digest_length` | `4096` | Must match `max_digest_length`. |
 | `performance_schema_max_sql_text_length` | `4096` | Recommended to match `max_digest_length`. Controls the maximum length of full SQL text stored in `events_statements_*` tables. |
+| `slow_query_log` | `1` | Required for capturing uncut long queries. Enables the slow query log to record queries that exceed the `long_query_time` threshold. |
+| `long_query_time` | `0` | Recommended. Set to `0` to capture all queries regardless of execution time, or adjust to your preferred threshold in seconds. |
 
 ## MySQL 5.7
-
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `performance_schema` | `1` | Required. Enables the Performance Schema. |
 | `max_digest_length` | `4096` | Required for collection of larger queries. Increases the size of SQL digest text in `events_statements_*` tables. If left at the default value, queries longer than `1024` characters will not be collected. |
 | `performance_schema_max_digest_length` | `4096` | Must match `max_digest_length`. |
 | `performance_schema_max_sql_text_length` | `4096` | Recommended to match `max_digest_length`. Controls the maximum length of full SQL text stored in `events_statements_*` tables. |
+| `slow_query_log` | `1` | Required for capturing uncut long queries. Enables the slow query log to record queries that exceed the `long_query_time` threshold. |
+| `long_query_time` | `0` | Recommended. Set to `0` to capture all queries regardless of execution time, or adjust to your preferred threshold in seconds. |
 
 > **Note:** These parameters require MySQL 5.7.6 or later.
 
 ## MySQL 5.6
-
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `performance_schema` | `1` | Required. Enables the Performance Schema. |
+| `slow_query_log` | `1` | Required for capturing uncut long queries. Enables the slow query log to record queries that exceed the `long_query_time` threshold. |
+| `long_query_time` | `0` | Recommended. Set to `0` to capture all queries regardless of execution time, or adjust to your preferred threshold in seconds. |
 
 > **Note:** `max_digest_length`, `performance_schema_max_digest_length`, and `performance_schema_max_sql_text_length` are not available in MySQL 5.6.
+
+## Important Notes for RDS Users
+- The `slow_query_log` parameter is **dynamic in RDS** and does not require a server restart to take effect.
+- Changes to `slow_query_log` and `long_query_time` can be applied immediately through the RDS console or CLI.
+- All other parameters listed above require a server restart to take effect.
