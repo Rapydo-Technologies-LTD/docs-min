@@ -1,28 +1,30 @@
 # Configure PostgreSQL Settings
-
 Configure the following in the DB Parameter Group (RDS) or `postgresql.conf` and then restart the server for the settings to take effect.
 
 ## PostgreSQL 12+
-
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `shared_preload_libraries` | `pg_stat_statements` | Required. Enables the pg_stat_statements extension for query tracking. |
 | `pg_stat_statements.track` | `all` | Recommended. Tracks all statements including those inside functions. Default is `top` (top-level statements only). |
 | `pg_stat_statements.max` | `10000` | Maximum number of statements tracked. Increase if you have many unique queries. |
 | `track_activity_query_size` | `4096` | Controls the maximum length of query text stored in `pg_stat_activity` and `pg_stat_statements`. Default is `1024`. |
+| `log_min_duration_statement` | `0` | Required for capturing uncut long queries. Logs all statements regardless of execution time. Set to `-1` to disable, or adjust to your preferred threshold in milliseconds. |
 
 > **Note:** After configuring `shared_preload_libraries`, you must restart PostgreSQL. Then run `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;` in each database you want to monitor.
 
-## Optional: Extensions for Enhanced RCA
+## Important Notes for RDS Users
+- The `log_min_duration_statement` parameter is **dynamic in RDS** and does not require a server restart to take effect.
+- Changes to `log_min_duration_statement` can be applied immediately through the RDS console or CLI.
+- The `shared_preload_libraries` parameter requires a server restart to take effect.
+- Changes to `pg_stat_statements.track`, `pg_stat_statements.max`, and `track_activity_query_size` can be applied without restart in most cases.
 
+## Optional: Extensions for Enhanced RCA
 The following extensions improve Rapydo's Root Cause Analysis capabilities. Rapydo will work without them, but with reduced RCA functionality.
 
 ### HypoPG (No Restart Required)
-
 Allows Rapydo to test hypothetical indexes without actually creating them, enabling smarter index recommendations.
 
 **Installation:**
-
 Run in each database you want to monitor:
 ```sql
 CREATE EXTENSION IF NOT EXISTS hypopg;
@@ -31,18 +33,14 @@ CREATE EXTENSION IF NOT EXISTS hypopg;
 > **Note:** HypoPG is safe for production — it creates virtual indexes in memory only during your session, without affecting actual data or consuming disk space. Available on Amazon RDS.
 
 ### pg_hint_plan (Requires Restart)
-
 Allows Rapydo to test alternative execution plans and validate optimization recommendations.
 
 **Installation:**
-
 1. Add `pg_hint_plan` to `shared_preload_libraries`:
    ```
    shared_preload_libraries = 'pg_stat_statements,pg_hint_plan'
    ```
-
 2. Restart PostgreSQL
-
 3. Run in each database you want to monitor:
    ```sql
    CREATE EXTENSION IF NOT EXISTS pg_hint_plan;
