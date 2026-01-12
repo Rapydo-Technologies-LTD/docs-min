@@ -1,0 +1,16 @@
+# Settings
+
+Configure Rapydo's system-wide settings including proxy connections, email notifications, AWS integrations, licensing, Slack integration, and user management.
+
+Access Settings from the bottom of the left navigation panel by clicking **Settings**.
+
+## Settings Sections
+
+- **Proxy** — Configure proxy servers for external connections
+- **Mail Configuration** — Set up SMTP for email notifications
+- **AWS Accounts** — Connect AWS accounts for RDS monitoring
+- **License** — View and manage your Rapydo license
+- **Slack Integration** — Connect Slack for notifications and Scout AI access
+- **User Management** — Create and manage users via API
+
+
