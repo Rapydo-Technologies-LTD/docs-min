@@ -1,0 +1,108 @@
+# User Management
+
+Create and manage Rapydo users via API.
+
+## Overview
+
+User management in Rapydo is handled exclusively through the API. There is no user interface for creating or managing users. This guide explains how to create users using command-line tools.
+
+## Creating a New User
+
+### Prerequisites
+
+- SSH access to the Rapydo machine
+- Admin credentials
+- `curl` and `jq` installed on the machine
+
+### Step 1: SSH into the Machine
+
+Connect to your Rapydo instance via SSH:
+
+```bash
+ssh user@your-rapydo-instance
+```
+
+### Step 2: Obtain an Authentication Token
+
+Use your admin credentials to get an access token:
+
+```bash
+TOKEN=$(curl -sS --location 'http://127.0.0.1:8000/v1/users/login' \
+--form 'username="admin"' \
+--form 'password="admin"' | jq -r .access_token)
+```
+
+**Important:** Adjust the username and password according to your environment. The default admin credentials should be changed after initial setup.
+
+### Step 3: Create the User
+
+Use the token to create a new user:
+
+```bash
+curl --location 'http://127.0.0.1:8000/v1/users/' \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer $TOKEN" \
+--data '{
+    "username": "user",
+    "password": "user",
+    "type": "read_only"
+}'
+```
+
+Change the `username`, `password`, and `type` values as needed.
+
+## User Types
+
+Rapydo supports two user types:
+
+**admin** — Full access to all features and settings including:
+- All dashboard and monitoring features
+- Query Analysis and Assistant
+- Settings configuration
+- User management (via API)
+
+**read_only** — View-only access including:
+- Dashboard viewing
+- Query and instance monitoring
+- No ability to modify settings or configurations
+
+## API Reference
+
+### Login
+
+```
+POST http://127.0.0.1:8000/v1/users/login
+Content-Type: multipart/form-data
+
+Parameters:
+- username (string): User's username
+- password (string): User's password
+
+Response:
+{
+  "access_token": "eyJ...",
+  "token_type": "bearer"
+}
+```
+
+### Create User
+
+```
+POST http://127.0.0.1:8000/v1/users/
+Content-Type: application/json
+Authorization: Bearer <token>
+
+Body:
+{
+  "username": "string",
+  "password": "string",
+  "type": "admin" | "read_only"
+}
+```
+
+## Security Recommendations
+
+- Change default admin credentials immediately after installation
+- Use strong passwords for all user accounts
+- Limit the number of admin users
+- Regularly audit user access
