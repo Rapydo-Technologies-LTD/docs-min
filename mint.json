@@ -89,6 +89,18 @@
 						"ai-dba/assistant",
 						"ai-dba/query-analysis"
 					]
+				},
+				{
+					"group": "Settings",
+					"pages": [
+						"settings/overview",
+						"settings/proxy",
+						"settings/mail-configuration",
+						"settings/aws-accounts",
+						"settings/license",
+						"settings/slack-integration",
+						"settings/user-management"
+					]
 				}
 			]
 		},
