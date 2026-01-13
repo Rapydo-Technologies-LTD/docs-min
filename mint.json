@@ -94,7 +94,6 @@
 					"group": "Settings",
 					"pages": [
 						"settings/overview",
-						"settings/proxy",
 						"settings/mail-configuration",
 						"settings/aws-accounts",
 						"settings/license",
