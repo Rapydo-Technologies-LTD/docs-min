@@ -1,0 +1,61 @@
+# License
+
+View and manage your Rapydo license.
+
+## Overview
+
+The License tab displays your current license status and allows you to activate or renew your Rapydo license.
+
+## License Status
+
+The License Status section shows your current license details:
+
+| Field | Description |
+|-------|-------------|
+| Current License | Your license type (e.g., Enterprise License) |
+| Status | Whether your license is active and valid |
+| Instance | The EC2 instance ID tied to this license |
+| AWS Account | The AWS account associated with your license |
+| Features | Your feature tier (e.g., Full Enterprise) |
+| Max Instances | Maximum number of database instances you can monitor |
+| Days Remaining | Time remaining until your license expires |
+| Expiration Date | Exact date and time when your license expires |
+
+## License Renewal
+
+Click **Activate** to renew an expiring license or apply a new license key.
+
+### Instance Information
+
+The renewal form displays your instance details for easy reference when contacting sales:
+
+<ParamField body="AWS Account ID" type="string">
+  Your 12-digit AWS account number. Click **Copy** to copy it to your clipboard.
+</ParamField>
+
+<ParamField body="EC2 Instance ID" type="string">
+  The instance ID tied to your license. Click **Copy** to copy it to your clipboard.
+</ParamField>
+
+<Info>
+  Provide these details to the sales team when requesting a license renewal.
+</Info>
+
+### Applying a License
+
+<ParamField body="License Key or Trial Token" type="string" required>
+  Paste your complete license key or trial token in the text area. License keys can be very long.
+</ParamField>
+
+Click **Renew Now** to apply the license or **Cancel** to close.
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card title="Sales Team" icon="phone">
+    For immediate renewal, contact the sales team with your instance details (AWS Account ID and EC2 Instance ID).
+  </Card>
+  <Card title="Support" icon="life-ring">
+    For urgent license assistance, email **support@rapydo.io**
+  </Card>
+</CardGroup>
