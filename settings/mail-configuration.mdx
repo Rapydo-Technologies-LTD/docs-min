@@ -1,0 +1,71 @@
+# Mail Configuration
+
+Set up email notifications for alerts, reports, and system notifications.
+
+## Overview
+
+The Mail Configuration tab allows you to configure SMTP settings for sending email notifications from Rapydo. This enables alerts for database issues, scheduled reports, and system notifications.
+
+## Adding a Mail Configuration
+
+Click **Add New Mail Configuration** to open the configuration form.
+
+### Configuration Fields
+
+<ParamField body="User Account" type="string" required>
+  SMTP username or AWS SES access key ID.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  SMTP password or AWS SES secret access key.
+</ParamField>
+
+<ParamField body="From Email" type="string" required>
+  The sender email address that will appear on outgoing notifications.
+</ParamField>
+
+<ParamField body="SMTP Service" type="string" required>
+  SMTP server hostname. For AWS SES, use the regional endpoint (e.g., `email-smtp.us-east-1.amazonaws.com`).
+</ParamField>
+
+<ParamField body="SMTP Port" type="number" required>
+  Server port number. Common values:
+  - **Port 25** — Default SMTP (often blocked)
+  - **Port 587** — SMTP with STARTTLS (recommended)
+  - **Port 465** — SMTP over SSL
+</ParamField>
+
+<ParamField body="TLS Mode" type="string">
+  Select the encryption mode:
+  - **None** — No encryption
+  - **Start TLS** — Upgrade to TLS after connecting
+  - **Use TLS** — TLS from the start
+</ParamField>
+
+<ParamField body="System Notification Recipients" type="string">
+  Comma-separated list of email addresses that will receive system notifications.
+</ParamField>
+
+### Actions
+
+- **Test** — Send a test email to verify the configuration works
+- **Save** — Add the mail configuration
+- **Cancel** — Discard changes and close the form
+
+## Managing Mail Configurations
+
+The mail configuration list displays all configured SMTP settings with key details:
+
+| Column | Description |
+|--------|-------------|
+| User Account | SMTP username or access key |
+| From Email | Sender email address |
+| SMTP Service | SMTP server hostname |
+| SMTP Port | Server port |
+| Start TLS | TLS on connect setting |
+| Use TLS | Full TLS setting |
+| Notification Recipients | Configured recipients |
+
+Use the action menu (⋮) on each row to edit or delete existing configurations.
+
+**Table Settings** — Customize which columns are displayed in the list.
