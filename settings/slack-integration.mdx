@@ -1,0 +1,82 @@
+# Slack Integration
+
+Connect Rapydo to Slack to receive database monitoring notifications and interact with Scout AI directly from Slack.
+
+## Overview
+
+The Slack Integration allows you to:
+
+- Receive real-time database alerts and notifications in Slack channels
+- Interact with Scout AI directly from Slack using natural language
+- Keep your team informed about database health without leaving Slack
+
+## Setup Wizard
+
+The Slack Integration Setup guides you through four steps to connect your workspace.
+
+<Steps>
+  <Step title="Enter Workspace Details">
+    Configure your Slack workspace domain and configuration token.
+    
+    <ParamField body="Workspace Domain" type="string" required>
+      Your Slack workspace domain. This is the subdomain of your Slack URL. For example, if your Slack URL is `mycompany.slack.com`, enter `mycompany`.
+    </ParamField>
+    
+    <ParamField body="Configuration Token" type="string" required>
+      Your Slack configuration token obtained from Slack app settings. Starts with `xoxe.xoxp-...`
+    </ParamField>
+    
+    <Warning>
+      Your tokens are securely transmitted and stored. They will never be displayed in logs or error messages.
+    </Warning>
+    
+    Click **Create App & Authorize** to proceed.
+  </Step>
+  
+  <Step title="Authorize Application">
+    Follow the Slack authorization flow to grant Rapydo access to your workspace. You'll be redirected to Slack to approve the permissions.
+  </Step>
+  
+  <Step title="Store App Token">
+    Configure the app token for Socket Mode support. This enables real-time communication between Rapydo and Slack.
+  </Step>
+  
+  <Step title="Complete Setup">
+    Review your configuration and finalize the integration.
+  </Step>
+</Steps>
+
+## Connection Status
+
+Once setup is complete, the Current Status section displays your progress through four stages:
+
+| Stage | Description |
+|-------|-------------|
+| Not Configured | Initial state, no connection established |
+| Bot Token Set | Bot token has been configured |
+| Connected | Successfully connected to Slack |
+| Fully Configured | All features enabled including Socket Mode |
+
+A fully configured integration shows:
+
+- **Workspace** — The name of your connected Slack workspace
+- **Connection Status** — Shows "Connected" when the integration is active
+- **Mode** — Displays "Socket Mode" when real-time features are enabled
+
+## Managing the Integration
+
+### Reconfigure Integration
+
+Click **Reconfigure Integration** to update your Slack connection settings. Use this if you need to:
+
+- Update tokens
+- Reconnect after a disconnection
+- Change workspace settings
+
+### Delete Integration
+
+<Warning>
+  Deleting the integration will disconnect Rapydo from your Slack workspace, stop all notifications, and disable Scout AI access from Slack.
+</Warning>
+
+Click **Delete Integration** to completely remove the Slack connection. You can set up the integration again at any time by going through the setup wizard.
