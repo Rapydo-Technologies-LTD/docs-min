@@ -1,0 +1,62 @@
+# AWS Accounts
+
+Connect AWS accounts to enable Rapydo to discover and monitor RDS instances.
+
+## Overview
+
+The AWS Accounts tab allows you to configure cross-account access so Rapydo can discover and monitor RDS instances across your AWS infrastructure. Rapydo uses IAM role assumption to securely access your AWS resources.
+
+## Prerequisites
+
+Before adding an AWS account, ensure you have:
+
+<Steps>
+  <Step title="Create IAM Role">
+    Create an IAM role in the target AWS account
+  </Step>
+  <Step title="Configure Trust Policy">
+    Configure the trust policy to allow Rapydo to assume the role
+  </Step>
+  <Step title="Attach Permissions">
+    Attach the necessary permissions for RDS and CloudWatch access
+  </Step>
+</Steps>
+
+## Adding an AWS Account
+
+Click **Add AWS Account Configuration** to open the configuration form.
+
+### Configuration Fields
+
+<ParamField body="Account Name" type="string" required>
+  A friendly name to identify this AWS account in Rapydo (e.g., "Production", "Staging", "Analytics").
+</ParamField>
+
+<ParamField body="AWS Account ID" type="string" required>
+  Your 12-digit AWS account number. You can find this in the AWS Console under your account settings.
+</ParamField>
+
+<ParamField body="Role ARN" type="string" required>
+  The Amazon Resource Name (ARN) of the IAM role that Rapydo will assume to access your account. This role must have permissions to describe RDS instances and access CloudWatch metrics.
+  
+  Example format: `arn:aws:iam::123456789012:role/RapydoMonitoringRole`
+</ParamField>
+
+### Actions
+
+- **Save** — Add the AWS account configuration
+- **Cancel** — Discard changes and close the form
+
+## Managing AWS Accounts
+
+The AWS accounts list displays all configured accounts with:
+
+| Column | Description |
+|--------|-------------|
+| AWS Account Name | Friendly name for the account |
+| AWS Account ID | 12-digit AWS account number |
+| Role ARN | IAM role ARN for access |
+
+Use the action menu on each row to edit or delete existing account configurations.
+
+**Table Settings** — Customize which columns are displayed in the list.
