@@ -1,3 +1,8 @@
+---
+title: "Dashboard View"
+description: "Detailed breakdown of all dashboard metrics and widgets"
+---
+
 ### Full Dashboard View
 
 <img
@@ -6,170 +11,297 @@
   alt="Dashboard Full"
 />  
 
+---
+
+## Dashboard Controls
+
 ### Time Range
 
-This widget displays the time range for the data represented in the graphs and metrics. In this case, it is set to show performance and activity from the last 3 / 6 / 12 / 24 / 48 hours. This can be adjusted based on the user's needs.
+This widget displays the time range for the data represented in the graphs and metrics. You can adjust the view to show performance and activity from the last 3, 6, 12, 24, or 48 hours based on your monitoring needs.
+
+**Use this to:**
+- Focus on recent incidents or performance spikes
+- Compare current activity to historical patterns
+- Zoom in on specific time windows for detailed analysis
 
 <img
   className="block dark:block"
   src="/images/dashboard/time-range.jpg"
-  alt="Dashboard Full"
+  alt="Time Range Selector"
   width={350}
 /> 
 
+---
+
+## Instance & Health Metrics
+
 ### DB Instances
 
-This widget displays the number of active database instances, idle instances, and stopped instances (0). Monitoring the state of instances helps in resource management and ensuring the right databases are running based on the current load.
+This widget displays the total number of database instances across three states:
+- **Active**: Instances currently running and accepting connections
+- **Idle**: Instances running but not actively processing queries
+- **Stopped**: Instances that are currently offline
+
+**Why it matters:**
+Monitoring instance states helps with resource management and ensures the right databases are running based on current load requirements.
 
 <img
   className="block dark:block"
   src="/images/dashboard/db-instances2.jpg"
-  alt="Dashboard Full"
-  width={250}
-/> 
-
-### User Activity
-
-Displays the current number of active users versus idle users. Active users are those interacting with the system, while idle users have not performed any significant activity recently.
-High idle user counts with low activity might indicate a need for session timeout adjustments or inactive user clean-up.
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/user-activity.jpg"
-  alt="Dashboard Full"
+  alt="Database Instances Status"
   width={250}
 /> 
 
 ### DB Connection Health
 
-This widget shows the number of healthy and unhealthy database connections. Unhealthy connections could be due to network issues, resource constraints, or connection errors.
-Investigate unhealthy connections to avoid system downtime or performance issues.
+This widget shows the health status of database connections across all monitored instances:
+- **Healthy Connections**: Connections operating normally
+- **Unhealthy Connections**: Connections experiencing issues
+
+**What to watch for:**
+Unhealthy connections could indicate network issues, resource constraints, authentication problems, or connection pool exhaustion. Investigate unhealthy connections immediately to prevent system downtime or performance degradation.
 
 <img
   className="block dark:block"
   src="/images/dashboard/connection-health2.jpg"
-  alt="Dashboard Full"
+  alt="Connection Health Status"
   width={250}
 /> 
 
-### Query Average Time
+---
 
-This widget shows the average query execution time across all database instances over the selected time range. It provides insight into the performance of the queries being run and can help identify slow-running queries.
+## User & Client Activity
 
-<img
-  className="block dark:block"
-  src="/images/dashboard/query-avg2.jpg"
-  alt="Dashboard Full"
-  width={250}
-/> 
+### User Activity
 
-### Longest Query
+Displays the current number of active users versus idle users across your database infrastructure:
+- **Active Users**: Users currently executing queries or maintaining active sessions
+- **Idle Users**: Users connected but not performing any significant activity
 
-Displays the time taken by the longest-running query during the selected time range. This metric helps in identifying potential bottlenecks and inefficiencies in the system.
+**Optimization tip:**
+A high idle user count with low activity might indicate a need for session timeout adjustments or automated cleanup of inactive connections to free up resources.
 
 <img
   className="block dark:block"
-  src="/images/dashboard/longest-query2.jpg"
-  alt="Dashboard Full"
-  width={250}
-/> 
-
-### Deadlocks
-
-This shows the number of deadlocks encountered in the database. Deadlocks occur when two or more queries block each other, preventing further execution. This is a critical metric for ensuring the smooth operation of the system.
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/deadlocks2.jpg"
-  alt="Dashboard Full"
-  width={250}
-/> 
-
-### Query Throttling
-
-Indicates the number of times query execution has been throttled. Throttling usually happens due to resource constraints like CPU or memory limits, where queries are temporarily delayed or limited to avoid system overload.
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/query-throttling2.jpg"
-  alt="Dashboard Full"
+  src="/images/dashboard/user-activity.jpg"
+  alt="User Activity Breakdown"
   width={250}
 /> 
 
 ### Clients
 
-This metric shows the number of active database clients. A client refers to an application or user connected to the database.
+This metric shows the total number of active database clients. A client refers to an application or user connection to the database.
+
+**Why track this:**
+- Understand connection patterns throughout the day
+- Plan for peak usage periods
+- Identify unexpected spikes in client connections
 
 <img
   className="block dark:block"
   src="/images/dashboard/clients2.jpg"
-  alt="Dashboard Full"
+  alt="Active Clients"
   width={250}
 /> 
 
-### Caching
+---
 
-This widget displays the number of caching instances running. Caching helps improve query performance by storing frequently accessed data in memory for faster retrieval.
-Make sure caching instances are running optimally to reduce load on the main database and improve response times.
+## Query Performance Metrics
+
+### Query Average Time
+
+This widget shows the average query execution time across all database instances over the selected time range. It provides a quick snapshot of overall query performance.
+
+**What to look for:**
+- Sudden increases in average time may indicate performance degradation
+- Compare to historical baselines to identify trends
+- Use this as a starting point for query optimization efforts
 
 <img
   className="block dark:block"
-  src="/images/dashboard/caching2.jpg"
-  alt="Dashboard Full"
+  src="/images/dashboard/query-avg2.jpg"
+  alt="Query Average Execution Time"
   width={250}
 /> 
 
-### Max CPU Usage
+### Longest Query
 
-This graph shows the CPU usage across different database instances. The Y-axis represents the percentage of CPU usage, while the X-axis represents the time. Each line corresponds to a specific instance, and spikes in usage can indicate high-load activities or resource-intensive queries.
-Keep an eye on instances that approach 100% usage, as this can lead to degraded performance or system overloads.
+Displays the duration of the longest-running query currently executing or completed during the selected time range.
+
+**Why this matters:**
+This metric helps identify potential bottlenecks and inefficiencies:
+- Long-running queries can block other operations
+- May indicate missing indexes or inefficient query structure
+- Could signal the need for query optimization or resource scaling
+
+**Action item:**
+Click through to see the actual query and use Rapydo's Query Analysis feature for optimization recommendations.
 
 <img
   className="block dark:block"
-  src="/images/dashboard/max-cpu2.jpg"
-  alt="Dashboard Full"
+  src="/images/dashboard/longest-query2.jpg"
+  alt="Longest Running Query"
+  width={250}
+/> 
+
+---
+
+## Database Locking & Contention
+
+### Deadlocks
+
+This shows the number of deadlocks encountered across all databases during the selected time range. 
+
+**What are deadlocks?**
+Deadlocks occur when two or more queries block each other, preventing further execution. For example:
+- Transaction A locks Table 1, waiting for Table 2
+- Transaction B locks Table 2, waiting for Table 1
+- Neither can proceed, creating a deadlock
+
+**Why it's critical:**
+- Deadlocks can cause transaction failures
+- May indicate poor transaction design or locking strategies
+- Repeated deadlocks suggest the need for query refactoring
+
+<img
+  className="block dark:block"
+  src="/images/dashboard/deadlocks2.jpg"
+  alt="Deadlock Count"
+  width={250}
 /> 
 
 ### Locks
 
-This graph shows the number of locks held at different time points. Database locks are mechanisms to control access to data during transactions. A high number of locks can indicate contention and slow down operations.
-Investigate instances where there is a large number of locks to identify and resolve transaction conflicts.
+This graph shows the number of locks held at different time points across your database instances. 
+
+**Understanding locks:**
+Database locks are mechanisms to control concurrent access to data during transactions. While normal, excessive locking can indicate contention issues.
+
+**What to investigate:**
+- Large spikes in lock counts
+- Sustained high lock levels
+- Correlation between locks and slow queries
+
+**Action item:**
+Click through to the detailed Locks & Waits view to identify specific blocking queries and resolve transaction conflicts.
 
 <img
   className="block dark:block"
   src="/images/dashboard/locks2.jpg"
-  alt="Dashboard Full"
+  alt="Locks Over Time"
+/> 
 
+---
+
+## Resource Utilization Metrics
+
+### Max CPU Usage
+
+This graph shows CPU usage percentage across different database instances over time. Each colored line represents a specific instance.
+
+**What to monitor:**
+- Instances approaching 100% CPU utilization
+- Sustained high CPU usage indicating resource-intensive workloads
+- Sudden spikes that correlate with slow query performance
+
+**Performance tip:**
+If an instance consistently runs above 80% CPU, consider:
+- Optimizing resource-intensive queries
+- Scaling to a larger instance size
+- Distributing load across additional instances
+
+<img
+  className="block dark:block"
+  src="/images/dashboard/max-cpu2.jpg"
+  alt="CPU Usage by Instance"
 /> 
 
 ### Max Connections
 
-This graph displays the maximum percentage of database connections used across different instances. It helps ensure that the number of active connections doesn't exceed the allowed limit for each instance.
-Monitor connection usage to ensure your system is not nearing or exceeding the connection limit, which can result in connection errors.
+This graph displays the percentage of maximum database connections being used across different instances over time.
+
+**Why this matters:**
+Each database instance has a connection limit. When you approach this limit:
+- New connection attempts will fail
+- Applications may experience connection errors
+- Database performance can degrade
+
+**Best practice:**
+- Monitor instances approaching 80-90% connection utilization
+- Implement connection pooling in applications
+- Consider scaling instance size if sustained high connection usage occurs
 
 <img
   className="block dark:block"
   src="/images/dashboard/max-connections2.jpg"
-  alt="Dashboard Full"
+  alt="Connection Utilization Percentage"
 /> 
 
 ### IOPS
 
-This graph shows the Input/Output Operations Per Second (IOPS) usage for each database instance. IOPS is a key metric for understanding the performance of storage systems, especially in high-transaction environments.
-Spikes in IOPS can indicate high read/write activity. If sustained high IOPS occur, consider scaling your storage systems or optimizing queries.
+This graph shows Input/Output Operations Per Second (IOPS) for each database instance. IOPS measures the performance of your storage system.
+
+**Understanding IOPS:**
+- **High IOPS**: Indicates heavy read/write activity
+- **Low IOPS**: Suggests light database activity or caching effectiveness
+- **Spikes**: Often correlate with batch jobs, reports, or data loads
+
+**Optimization strategies:**
+- If sustained high IOPS occur, consider:
+  - Scaling to faster storage (e.g., Provisioned IOPS on AWS)
+  - Optimizing queries to reduce disk reads
+  - Implementing better indexing strategies
+  - Adding read replicas to distribute load
 
 <img
   className="block dark:block"
   src="/images/dashboard/iops2.jpg"
-  alt="Dashboard Full"
+  alt="IOPS by Instance"
 />  
 
-Every click one one of the tiles will open a detailed view of the specific metric, providing more in-depth information and insights for better monitoring and management of the database system.
+---
 
-**For example the locks table:**
+## Drilling Down for Details
+
+Every widget on the dashboard is clickable. Clicking a tile opens a detailed view with more in-depth information and insights for better monitoring and management.
+
+**For example, clicking the Locks widget opens a detailed table:**
 
 <img
   className="block dark:block"
   src="/images/dashboard/locks-table.jpg"
-  alt="Dashboard Full"
+  alt="Detailed Locks Table View"
 />  
+
+**What you get in detailed views:**
+- Full transaction details
+- Blocking query identification
+- Wait times and lock types
+- Ability to kill blocking queries
+- Historical trends
+
+---
+
+## Quick Reference: When to Investigate
+
+| **Metric** | **Investigate When** |
+|-----------|---------------------|
+| **DB Instances** | Instances are stopped unexpectedly |
+| **Connection Health** | Unhealthy connections appear |
+| **User Activity** | High idle users with low activity |
+| **Query Avg Time** | Sudden increase vs. baseline |
+| **Longest Query** | Exceeds acceptable thresholds |
+| **Deadlocks** | Any deadlocks occur |
+| **Locks** | Large spikes or sustained high counts |
+| **CPU Usage** | Sustained >80% or spikes to 100% |
+| **Max Connections** | Approaching 90% utilization |
+| **IOPS** | Sustained high levels or unusual spikes |
+
+---
+
+## Next Steps
+
+- [Set Up Alert Rules](/automation/alerts_triggers_and_actions) - Get notified when metrics exceed thresholds
+- [Configure Scout Rules](/automation/scout_triggers_and_actions) - Automatically respond to long-running queries
+- [Analyze Query Performance](/queries/introduction_to_queries) - Deep dive into slow queries
+- [Monitor Locks & Waits](/queries/queries_view) - Investigate blocking queries
