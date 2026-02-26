@@ -24,15 +24,6 @@ This widget displays the time range for the data represented in the graphs and m
 - Compare current activity to historical patterns
 - Zoom in on specific time windows for detailed analysis
 
-<!-- 
-<img
-  className="block dark:block"
-  src="/images/dashboard/time-range.jpg"
-  alt="Time Range Selector"
-  width={350}
-/> 
--->
-
 ---
 
 ## Instance & Health Metrics
@@ -47,13 +38,6 @@ This widget displays the total number of database instances across three states:
 **Why it matters:**
 Monitoring instance states helps with resource management and ensures the right databases are running based on current load requirements.
 
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/db-instances2.jpg"
-  alt="Database Instances Status"
-  width={250}
-/> 
- -->
 ### DB Connection Health
 
 This widget shows the health status of database connections across all monitored instances:
@@ -62,13 +46,6 @@ This widget shows the health status of database connections across all monitored
 
 **What to watch for:**
 Unhealthy connections could indicate network issues, resource constraints, authentication problems, or connection pool exhaustion. Investigate unhealthy connections immediately to prevent system downtime or performance degradation.
-
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/connection-health2.jpg"
-  alt="Connection Health Status"
-  width={250}
-/>  -->
 
 ---
 
@@ -83,13 +60,6 @@ Displays the current number of active users versus idle users across your databa
 **Optimization tip:**
 A high idle user count with low activity might indicate a need for session timeout adjustments or automated cleanup of inactive connections to free up resources.
 
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/user-activity.jpg"
-  alt="User Activity Breakdown"
-  width={250}
-/>  -->
-
 ### Clients
 
 This metric shows the total number of active database clients. A client refers to an application or user connection to the database.
@@ -98,13 +68,6 @@ This metric shows the total number of active database clients. A client refers t
 - Understand connection patterns throughout the day
 - Plan for peak usage periods
 - Identify unexpected spikes in client connections
-
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/clients2.jpg"
-  alt="Active Clients"
-  width={250}
-/>  -->
 
 ---
 
@@ -119,13 +82,6 @@ This widget shows the average query execution time across all database instances
 - Compare to historical baselines to identify trends
 - Use this as a starting point for query optimization efforts
 
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/query-avg2.jpg"
-  alt="Query Average Execution Time"
-  width={250}
-/>  -->
-
 ### Longest Query
 
 Displays the duration of the longest-running query currently executing or completed during the selected time range.
@@ -138,13 +94,6 @@ This metric helps identify potential bottlenecks and inefficiencies:
 
 **Action item:**
 Click through to see the actual query and use Rapydo's Query Analysis feature for optimization recommendations.
-
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/longest-query2.jpg"
-  alt="Longest Running Query"
-  width={250}
-/>  -->
 
 ---
 
@@ -165,13 +114,6 @@ Deadlocks occur when two or more queries block each other, preventing further ex
 - May indicate poor transaction design or locking strategies
 - Repeated deadlocks suggest the need for query refactoring
 
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/deadlocks2.jpg"
-  alt="Deadlock Count"
-  width={250}
-/>  -->
-
 ### Locks
 
 This graph shows the number of locks held at different time points across your database instances. 
@@ -183,15 +125,6 @@ Database locks are mechanisms to control concurrent access to data during transa
 - Large spikes in lock counts
 - Sustained high lock levels
 - Correlation between locks and slow queries
-
-<!-- **Action item:**
-Click through to the detailed Locks & Waits view to identify specific blocking queries and resolve transaction conflicts.
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/locks2.jpg"
-  alt="Locks Over Time"
-/>  -->
 
 ---
 
@@ -212,12 +145,6 @@ If an instance consistently runs above 80% CPU, consider:
 - Scaling to a larger instance size
 - Distributing load across additional instances
 
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/max-cpu2.jpg"
-  alt="CPU Usage by Instance"
-/> --> 
-
 ### Max Connections
 
 This graph displays the percentage of maximum database connections being used across different instances over time.
@@ -232,12 +159,6 @@ Each database instance has a connection limit. When you approach this limit:
 - Monitor instances approaching 80-90% connection utilization
 - Implement connection pooling in applications
 - Consider scaling instance size if sustained high connection usage occurs
-
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/max-connections2.jpg"
-  alt="Connection Utilization Percentage"
-/> --> 
 
 ### IOPS
 
@@ -254,12 +175,6 @@ This graph shows Input/Output Operations Per Second (IOPS) for each database ins
   - Optimizing queries to reduce disk reads
   - Implementing better indexing strategies
   - Adding read replicas to distribute load
-
-<!-- <img
-  className="block dark:block"
-  src="/images/dashboard/iops2.jpg"
-  alt="IOPS by Instance"
-/>  --> 
 
 ---
 
@@ -303,6 +218,7 @@ Each widget provides a gateway to more detailed information:
 | **DB Instances** | Full instance details, health checks, configuration, and metrics |
 
 **Pro Tip:** Click on any metric that looks unusual or concerning to investigate further and take immediate action.
+
 ---
 
 ## Quick Reference: When to Investigate
