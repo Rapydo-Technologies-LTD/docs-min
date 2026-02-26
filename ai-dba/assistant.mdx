@@ -1,15 +1,26 @@
-Your intelligent database assistant that answers questions about your entire database fleet using natural language.
+---
+title: 'AI DBA Assistant'
+description: 'Your intelligent database assistant that answers questions about your entire database fleet using natural language'
+---
 
 ## Overview
 
-AI DBA Chat transforms how you interact with your databases. Instead of writing complex queries or navigating multiple monitoring dashboards, simply ask questions in plain English. The AI analyzes your fleet's monitoring data and returns insights with actionable recommendations.
+AI DBA Assistant transforms how you interact with your databases. Instead of writing complex queries or navigating multiple monitoring dashboards, simply ask questions in plain English. The AI analyzes your fleet's monitoring data and returns insights with actionable recommendations.
+
+**Key capability:** The Assistant doesn't just identify problems—it provides complete query analysis with remediation plans to fix them.
+
+---
 
 ## Getting Started
 
-Access Assistant from the left navigation panel under **AI DBA → Assistant**. The interface is straightforward: type your question in the input field and press enter or click the send button. Each question is handled independently—there's no conversation memory between messages, so include all relevant context in each question.
+Access the Assistant from the left navigation panel under **AI DBA → Assistant**. The interface is straightforward: type your question in the input field and press enter or click the send button.
+
+**Important:** Each question is handled independently—there's no conversation memory between messages, so include all relevant context in each question.
 
 **Example first question:**
 > "Show me the top 3 longest queries from the last day"
+
+---
 
 ## Key Features
 
@@ -24,65 +35,257 @@ Ask questions the way you would ask a senior DBA. The AI understands context and
 - "Which instances have the highest connection count right now?"
 - "Show me slow queries affecting the payments table"
 - "What's causing high CPU on our production database?"
+- "Analyze the queries running longer than 5 minutes"
+- "Why is this query slow: SELECT * FROM orders WHERE created_at > '2024-01-01'"
+
+---
 
 ### Rich Analysis Results
 
 Every response includes multiple components designed to give you complete context:
 
-**Findings Summary** — A clear statement of what the AI discovered, including affected instances, timeframes, and severity indicators.
+#### **Findings Summary**
+A clear statement of what the AI discovered, including:
+- Affected database instances
+- Timeframes and frequency
+- Severity indicators
+- Impact on performance
 
-**The Query** — When relevant, the AI displays the actual SQL being analyzed, formatted for readability.
+---
 
-**Root Cause Analysis** — The AI doesn't just show you what's slow—it explains why. Expect insights about missing indexes, locking issues, inefficient joins, or resource constraints.
+#### **The Query**
+When relevant, the AI displays the actual SQL being analyzed, formatted for readability. This includes:
+- Full query text with syntax highlighting
+- Execution time and resource usage
+- Database and user information
 
-**Recommendations** — Prioritized action items with specific steps. Each recommendation includes the reasoning and, where applicable, the exact SQL commands to implement fixes.
+---
 
-**Follow-up Questions** — Suggested next steps to continue your investigation. Click any suggestion to drill deeper into the issue.
+#### **Query Analysis**
+The AI doesn't just show you what's slow—it explains why and how to fix it:
+
+**Root Cause Identification:**
+- Missing indexes
+- Inefficient joins or subqueries
+- Full table scans
+- Locking or blocking issues
+- Resource constraints (CPU, memory, I/O)
+
+**Remediation Plans:**
+Each analysis includes a step-by-step remediation plan with:
+- **Specific actions** to implement
+- **Ready-to-run SQL** for creating indexes or modifying queries
+- **Estimated performance impact** (e.g., "Expected 80% reduction in execution time")
+- **Implementation guidance** with considerations and best practices
+
+**Example Remediation Plan:**
+```
+Problem: Full table scan on `orders` table (5M rows)
+Root Cause: Missing index on `created_at` column
+
+Recommended Action:
+CREATE INDEX idx_orders_created_at ON orders(created_at);
+
+Expected Impact:
+- Reduce query time from 45s to ~2s (95% improvement)
+- Reduce CPU usage during query execution
+
+Considerations:
+- Index creation will lock the table briefly
+- Recommended to run during low-traffic period
+```
+
+---
+
+#### **Recommendations**
+Prioritized action items beyond the immediate query fix:
+- Related optimizations for similar queries
+- Schema design improvements
+- Configuration adjustments
+- Monitoring suggestions
+
+---
+
+#### **Follow-up Questions**
+Suggested next steps to continue your investigation. Click any suggestion to drill deeper into the issue.
+
+**Examples:**
+- "Show me all queries using the orders table"
+- "What other indexes might help this workload?"
+- "Are there any blocking queries right now?"
+
+---
 
 ### Results & Visualizations Panel
 
 For queries that return data, a side panel displays interactive results:
 
-**Data Tables** — Searchable result sets showing query details, execution metrics, user information, and state. Export or copy data directly from this view.
+#### **Data Tables**
+Searchable result sets showing:
+- Query details and full SQL text
+- Execution metrics (duration, CPU, rows examined)
+- User information and connection details
+- Query state and status
 
-**Charts & Graphs** — Visual representations of fleet-wide metrics including:
+**Actions:** Export data to CSV or copy directly from the view
+
+---
+
+#### **Charts & Graphs**
+Visual representations of fleet-wide metrics:
 - Lock counts by database instance
 - Average wait times across the fleet
 - Distribution breakdowns (lock types, query types, etc.)
-- Time-series trends
+- Time-series trends (CPU, connections, query duration)
 
-**Quick Stats** — At-a-glance metrics like total fleet locks, instance counts, and aggregate values.
+---
+
+#### **Quick Stats**
+At-a-glance metrics:
+- Total fleet locks
+- Instance counts
+- Aggregate values (total queries, average duration, etc.)
+
+---
 
 ### Action Buttons
 
 Each analysis includes action buttons to move from insight to resolution:
 
-- **Result Table** — View the raw data behind the analysis
-- **Copy Generated Query** — Get the SQL that Assistant used, ready to paste into your own tools
-- **Execute Query** — Opens the **Execute Query** tool (Execute Query in the left panel) with the generated SQL pre-loaded. From there you can review the query, modify it if needed, save it as a template for future use, or run it manually against RapydoDB
+**Result Table**
+View the raw data behind the analysis in a sortable, filterable table format.
 
+**Copy Generated Query**
+Get the SQL that Assistant used internally, ready to paste into your own tools or save for future reference.
+
+**Execute Query**
+Opens Rapydo's **Execute Query** tool with the generated SQL pre-loaded. From there you can:
+- Review and modify the query
+- Run it against RapydoDB for further investigation
+- Save it as a template for future use
+- Share it with your team
+
+---
 
 ## Best Practices
 
-**Be specific about timeframes** — "Last 24 hours" or "since yesterday" helps Assistant focus on relevant data.
+### Be Specific About Timeframes
+"Last 24 hours" or "since yesterday" helps Assistant focus on relevant data.
 
-**Name your instances** — If you're investigating a specific server, include its identifier in your question.
+**Examples:**
+- ❌ "Show me slow queries" (too vague)
+- ✅ "Show me queries running longer than 10 seconds in the last 6 hours"
 
-**Include full context** — Since each question is independent, provide all necessary details in a single message rather than relying on follow-ups.
+---
 
+### Name Your Instances
+If you're investigating a specific server, include its identifier in your question.
 
+**Examples:**
+- ❌ "Why is the database slow?"
+- ✅ "Why is production-db-01 experiencing high CPU?"
+
+---
+
+### Include Full Context
+Since each question is independent, provide all necessary details in a single message rather than relying on follow-ups.
+
+**Examples:**
+- ❌ "What about yesterday?" (no context from previous question)
+- ✅ "Show me CPU usage on production-db-01 yesterday between 2pm and 4pm"
+
+---
+
+### Ask for Analysis When Needed
+If you want recommendations and remediation plans, explicitly ask for analysis.
+
+**Examples:**
+- "Analyze this query and suggest optimizations: SELECT * FROM..."
+- "What's causing slow performance on database X and how can I fix it?"
+
+---
 
 ## How It Works
 
-Assistant queries RapydoDB—our dedicated monitoring database where all your fleet's performance data is stored. This architecture means:
+Assistant queries **RapydoDB**—Rapydo's dedicated monitoring database where all your fleet's performance data is stored. This architecture provides significant advantages:
 
-**Zero impact on production** — Assistant never connects to your RDS instances directly. All analysis runs against pre-collected monitoring data, so your production databases experience no additional load.
+### **Zero Impact on Production**
+Assistant never connects to your production database instances directly. All analysis runs against pre-collected monitoring data in RapydoDB, so your production databases experience no additional load.
 
-**Fast responses** — Because the data is already aggregated in RapydoDB, queries return quickly regardless of your fleet size.
+### **Fast Responses**
+Because the data is already aggregated in RapydoDB, queries return quickly regardless of your fleet size. No need to wait for real-time data collection.
 
-**Safe exploration** — Ask as many questions as you want. There's no risk of accidentally running expensive queries against production.
+### **Safe Exploration**
+Ask as many questions as you want. There's no risk of accidentally running expensive queries against production systems.
+
+### **Historical Analysis**
+All monitoring data is retained in RapydoDB, enabling you to investigate past incidents and identify long-term trends.
+
+**💡 Important:** The Assistant analyzes monitoring data only. It cannot modify your production databases, execute commands, or access application data.
+
+---
 
 ## Supported Databases
 
-Assistant analyzes monitoring data from all database engines supported by Rapydo, including MySQL and PostgreSQL environments. The AI automatically adjusts its analysis and recommendations based on the database engine.
+Assistant analyzes monitoring data from all database engines supported by Rapydo:
+- **MySQL** (all versions)
+- **PostgreSQL** (all versions)
 
+The AI automatically adjusts its analysis and recommendations based on the database engine, ensuring relevant and accurate guidance for your specific environment.
+
+---
+
+## Common Use Cases
+
+### **Performance Investigation**
+"Show me queries running longer than 30 seconds on production-db-01 in the last hour"
+
+→ Get full analysis with root causes and remediation plans
+
+---
+
+### **Fleet-Wide Monitoring**
+"Which instances have the highest CPU usage right now?"
+
+→ View visual charts ranking your instances by resource usage
+
+---
+
+### **Lock and Blocking Analysis**
+"Are there any blocking queries affecting the orders table?"
+
+→ Identify lock chains and get recommendations to resolve contention
+
+---
+
+### **Query Optimization**
+"Analyze this query: SELECT * FROM users WHERE email = 'test@example.com'"
+
+→ Receive index recommendations and query rewrite suggestions
+
+---
+
+### **Capacity Planning**
+"Show me connection count trends across all instances for the last 7 days"
+
+→ Visual time-series data to identify growth patterns
+
+---
+
+## Tips for Better Results
+
+✅ **Use specific table or database names** when investigating schema-specific issues
+
+✅ **Include query text** when asking for optimization help
+
+✅ **Specify instance names** when troubleshooting specific servers
+
+✅ **Combine multiple conditions** for precise results: "Queries longer than 10s on production AND using the payments table"
+
+---
+
+## What's Next?
+
+- [Query Analysis](/ai-dba/query-analysis) - Learn about Rapydo's comprehensive query analysis and remediation features
+- [Execute Query](/execute-query/introduction_to_execute_query) - Explore the SQL editor for running custom queries against RapydoDB
+- [Queries](/queries/introduction_to_queries) - Understand real-time query monitoring
