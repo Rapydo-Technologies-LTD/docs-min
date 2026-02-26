@@ -1,30 +1,166 @@
 ---
-title: 'Introduction'
-description: 'Automate Your Solution to Any Bottleneck with Rapydo Scout and Cortex'
+title: 'Automation'
+description: 'Automate database monitoring and performance management with intelligent rules'
 ---
 
-### Introduction
+## Introduction
 
-In the current era of data-centric operations, ensuring peak database performance and robust security is essential for delivering uninterrupted user experiences and avoiding expensive system failures. The exponential growth of applications and their associated data volumes presents significant hurdles for developers and database administrators in efficiently managing database operations.
+In the current era of data-centric operations, ensuring peak database performance and robust security is essential for delivering uninterrupted user experiences and avoiding expensive system failures. The exponential growth of applications and their associated data volumes presents significant challenges for developers and database administrators in efficiently managing database operations.
 
-A potent answer to these challenges comes in the form of automatic user-defined rules implemented in Amazon RDS MySQL through Rapydo. These adaptable rules offer comprehensive management across various facets of database operations, encompassing performance enhancement, security reinforcement, and resource optimization. By initiating precise actions in response to specific triggers, these rules play a crucial role in upholding Service Level Agreement (SLA) commitments, bolstering security protocols, and streamlining overall database administration.  
+Rapydo's automation capabilities provide a powerful solution to these challenges through intelligent, user-defined rules that proactively monitor and manage your database infrastructure. These flexible rules enable comprehensive management across various aspects of database operations, including performance optimization, security reinforcement, and resource management.
 
-### Understanding User-Defined Rules in Rapydo for Amazon RDS MySQL
+By triggering precise actions in response to specific conditions, automation rules help you maintain Service Level Agreement (SLA) commitments, strengthen security protocols, and streamline overall database administration—all without manual intervention.
 
-Rapydo's user-defined rules for Amazon RDS MySQL are conditions and actions that allow for proactive database management. These rules can be triggered by various events and can execute a wide range of actions in response.
+---
 
-Rapydo rules abilities are divided into four sections, making it easy for the user to define and understand them:
+## How Automation Works in Rapydo
 
-## Automation Rules Modules
+Rapydo's automation system operates on a simple principle: **define conditions, set thresholds, and specify actions**. When a condition is met (for example, a query running longer than 60 seconds), Rapydo automatically executes the action you've defined (such as killing the query or sending an alert).
+
+This proactive approach enables you to:
+- **Prevent Issues Before They Escalate**: Automatically respond to performance degradation
+- **Maintain Consistent Performance**: Enforce query duration limits and resource constraints
+- **Stay Informed**: Receive alerts via email or Slack when thresholds are breached
+- **Reduce Manual Overhead**: Let automation handle routine monitoring and responses
+
+---
+
+## Automation Modules
+
+Rapydo provides two types of automation rules, each designed for specific monitoring and management scenarios:
 
 ### Scout Rules
-These rules are derived from a module which is installed as a standalone machine that aims to monitor the system from a broad point of view and can offer both real time machine metrics and handle access to the databases.
 
-### Cortex Rules
-These rules are derived from a module also called Rapydo's proxy. This module is located inline between the database and the user's application. This module focuses mainly on the SQL data that passes through it and can modify in real time all the relevant parameters of the query, connection and users.
+Scout Rules monitor long-running queries and database activity in real-time. These rules are ideal for:
 
-### Cache rules
-These rules are a part of Rapydo's proxy cache module and can decide in real time if a query should be cached or if a cache invalidation is required.
+- **Query Duration Monitoring**: Detect and respond to queries that exceed time thresholds
+- **Automatic Query Termination**: Kill queries that run too long and consume excessive resources
+- **Performance Protection**: Prevent runaway queries from impacting overall database performance
+- **Custom Alerting**: Get notified when specific query patterns or durations are detected
+
+**Common Use Cases:**
+- Kill any query running longer than 5 minutes
+- Alert when specific users run queries exceeding duration limits
+- Automatically terminate queries from specific databases that exceed thresholds
+- Monitor and respond to queries matching specific patterns (e.g., full table scans)
+
+**How Scout Rules Work:**
+Scout Rules continuously monitor active queries across all your database instances. When a query matches your defined criteria (duration, user, database, query pattern), the rule triggers the specified action—whether that's killing the query, sending an alert, or both.
+
+---
 
 ### Alert Rules
-These rules are a part of the Scout module which keeps track of the machine metrics among other things. The Alerts can be derived both from a change in the machine utilization or the database utilization.
+
+Alert Rules monitor database and system metrics, notifying you when performance thresholds are exceeded. These rules are ideal for:
+
+- **Resource Monitoring**: Track CPU, memory, connections, and IOPS usage
+- **Threshold-Based Alerting**: Get notified when metrics exceed defined limits
+- **Multi-Channel Notifications**: Receive alerts via email, Slack, or both
+- **Proactive Issue Detection**: Identify resource constraints before they cause outages
+
+**Common Use Cases:**
+- Alert when CPU usage exceeds 80% for more than 5 minutes
+- Notify team via Slack when connection pool reaches 90% capacity
+- Send email alerts when IOPS usage spikes unexpectedly
+- Monitor memory usage and alert before out-of-memory errors occur
+
+**How Alert Rules Work:**
+Alert Rules continuously evaluate metrics across your database instances. When a metric crosses your defined threshold for a specified duration, Rapydo sends notifications to your configured channels (email, Slack, or both), enabling your team to respond quickly.
+
+---
+
+## Rule Components
+
+Every automation rule in Rapydo consists of three key components:
+
+### 1. Triggers (Conditions)
+The conditions that must be met for the rule to activate. Examples:
+- Query duration exceeds 300 seconds
+- CPU usage is above 85%
+- Number of connections exceeds 100
+- Specific query pattern is detected
+
+### 2. Filters (Optional)
+Additional criteria to narrow down when the rule applies. Examples:
+- Only for specific databases
+- Only for specific users
+- Only for specific instance types
+- Only during certain time periods
+
+### 3. Actions
+What happens when the trigger conditions are met. Examples:
+- Kill the query
+- Send email notification
+- Send Slack message
+- Log the event
+
+---
+
+## Benefits of Automation
+
+### **Proactive Management**
+Move from reactive firefighting to proactive prevention. Address issues automatically before they impact users.
+
+### **24/7 Monitoring**
+Your rules work around the clock, monitoring and responding even when your team is offline.
+
+### **Consistent Enforcement**
+Apply the same standards and responses across all database instances without manual intervention.
+
+### **Reduced Downtime**
+Automatically terminate problematic queries and alert teams to resource constraints before they cause outages.
+
+### **Improved SLA Compliance**
+Maintain performance commitments by enforcing query limits and responding to threshold breaches instantly.
+
+### **Team Efficiency**
+Free your team from routine monitoring tasks and let them focus on strategic improvements.
+
+---
+
+## Getting Started with Automation
+
+Ready to set up your first automation rule? Here's the typical workflow:
+
+**Step 1: Choose Your Rule Type**
+- **Scout Rules** for query monitoring and termination
+- **Alert Rules** for metric-based notifications
+
+**Step 2: Define Your Conditions**
+- Set thresholds (duration, CPU %, connections, etc.)
+- Add filters (database, user, query pattern)
+- Specify evaluation frequency
+
+**Step 3: Configure Actions**
+- Choose what happens when conditions are met
+- Set up notification channels (email, Slack)
+- Test the rule with sample scenarios
+
+**Step 4: Monitor and Refine**
+- Review rule execution logs
+- Adjust thresholds based on real-world behavior
+- Add or modify rules as your needs evolve
+
+---
+
+## What's Next?
+
+- [Defining Rules](/automation/defining_rules) - Learn the step-by-step process for creating automation rules
+- [Scout Rules Reference](/automation/scout_triggers_and_actions) - Complete guide to Scout Rules triggers and actions
+- [Alert Rules Reference](/automation/alerts_triggers_and_actions) - Complete guide to Alert Rules triggers and actions
+
+---
+
+## Best Practices
+
+✅ **Start Conservative**: Begin with higher thresholds and adjust down as you understand normal behavior
+
+✅ **Test Before Deploying**: Create rules in test environments first to validate behavior
+
+✅ **Use Multiple Notification Channels**: Configure both email and Slack for critical alerts
+
+✅ **Document Your Rules**: Keep track of why each rule exists and what problem it solves
+
+✅ **Review Regularly**: Periodically audit your rules to ensure they're still relevant and effective
+
+✅ **Avoid Over-Automation**: Don't create so many rules that legitimate activity gets blocked or generates alert fatigue
