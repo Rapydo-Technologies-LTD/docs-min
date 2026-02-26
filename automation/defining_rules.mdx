@@ -1,23 +1,387 @@
-### Here's a step-by-step guide to implementing rules in your Amazon RDS MySQL database using Rapydo
+---
+title: 'Defining Rules'
+description: 'Step-by-step guide to creating automation rules in Rapydo'
+---
 
-‍
+## Creating Automation Rules
 
-#### Identify Key Metrics and Scenarios 
-* Determine which metrics, queries, users, or hosts are most critical to your database's performance and security.
+Rapydo automation rules enable proactive database management by automatically responding to specific conditions. This guide walks you through the process of creating effective rules.
 
-#### Define and Configure Triggers: Set up triggers based on your identified metrics
-* Alert when Query Duration exceeds 30 seconds
-* Notify when CPU utilization surpasses 90%
-* Trigger action when a specific user connects to the database
+---
 
-#### Specify Actions: For each trigger, define the appropriate action(s)
-* Sending alerts to relevant personnel
-* Applying rate limits to specific users or queries
-* Initiating automatic scaling of resources
-‍
+## Step 1: Identify What to Monitor
 
-#### Test and Refine
-* Before deploying in production, thoroughly test your rules in a staging environment to ensure they function as expected
+Before creating a rule, understand your database's normal behavior and identify what needs attention.
 
-#### Monitor and Adjust
-* Once implemented, continuously monitor the effectiveness of your rules and make adjustments as necessary to optimize performance and security.
+**Key questions to ask:**
+- What query duration is acceptable for your workload?
+- At what CPU/memory threshold does performance degrade?
+- How close do you get to connection limits during peak hours?
+- Are there specific users or databases requiring special monitoring?
+
+**Common scenarios:**
+- "Kill any query running longer than 5 minutes"
+- "Alert when CPU exceeds 80% for more than 3 minutes"
+- "Notify when connections reach 90% of the limit"
+- "Terminate reporting queries exceeding 10 minutes"
+
+---
+
+## Step 2: Choose Your Rule Type
+
+### Scout Rules
+**Use for:** Query monitoring and automatic action.
+
+- Monitor long-running queries in real-time
+- Automatically kill queries exceeding duration thresholds
+- Filter by user, database, or query pattern
+- Get alerts when specific queries are detected
+
+**Example:** Kill queries from `analytics_user` running longer than 600 seconds
+
+---
+
+### Alert Rules
+**Use for:** Metric monitoring and notifications
+
+- Monitor CPU, memory, connections, IOPS, locks, deadlocks
+- Send alerts when thresholds are exceeded
+- Multi-metric support (combine multiple conditions)
+- Email and webhook notifications
+
+**Example:** Alert when CPU > 80% for 5 consecutive checks
+
+---
+
+## Step 3: Define Triggers and Conditions
+
+Specify the exact conditions that activate your rule.
+
+### For Scout Rules
+
+**Query Duration Trigger**
+```
+Condition: Query running longer than X seconds
+Example: Duration > 300 seconds
+```
+
+**Optional Filters:**
+- **Database**: Apply only to specific databases (e.g., `production_db`)
+- **User**: Target specific users (e.g., `reporting_user`)
+- **Query Pattern**: Match SQL text or patterns (e.g., `SELECT * FROM large_table`)
+- **Host**: Filter by client connection source
+
+**💡 Important:** Filters are optional but help target rules precisely and avoid impacting legitimate queries.
+
+---
+
+### For Alert Rules
+
+**Metric Triggers**
+
+Available metrics for monitoring:
+
+**Resource Utilization:**
+- **CPU Utilization (%)**: Processor usage across instances
+- **Free Memory**: Available RAM (not percentage-based)
+- **Read IOPS**: Read input/output operations per second
+- **Write IOPS**: Write input/output operations per second
+- **Connection Utilization (%)**: Percentage of maximum connections in use
+
+**Query Performance:**
+- **Max Query Duration**: Duration of the longest-running query
+
+**Database Activity:**
+- **Connections count**: Number of active connections
+- **DB count**: Number of databases
+- **Users count**: Number of connected users
+- **Hosts count**: Number of client hosts with connections
+- **Waits count**: Number of queries in wait state
+
+**Operators:**
+- Greater than (>)
+- Less than (<)
+- Equal to (=)
+- Not equal to (≠)
+
+---
+
+**Example single metric:**
+```
+Metric: CPU Utilization
+Operator: Greater than
+Value: 80%
+```
+
+---
+
+**Multi-Metric Rules (Advanced)**
+
+Combine multiple metrics with AND/OR logic for sophisticated monitoring.
+
+**Example - High CPU AND High Connections:**
+```
+Metric 1: CPU Utilization > 80%
+AND
+Metric 2: Connections count > 100
+```
+→ Alert only when BOTH conditions are true simultaneously
+
+
+**Example - Query Performance Issues:**
+```
+Metric 1: Max Query Duration > 60 seconds
+AND
+Metric 2: Waits count > 20
+```
+→ Alerts when slow queries correlate with high wait states
+
+**💡 Important:** Multi-metric rules let you create precise conditions that reduce false alerts. For example, alerting on high CPU is more meaningful when combined with high connections.
+
+---
+
+## Step 4: Specify Actions
+
+Define what happens when trigger conditions are met.
+
+
+### Scout Rule Actions
+
+When a Scout Rule is triggered, you can execute one of these actions:
+
+---
+
+**Kill query**
+- Terminates the specific query that triggered the rule
+- **Use when:** Query exceeds acceptable duration or consumes excessive resources
+- **Example:** Kill any query running longer than 300 seconds
+
+---
+
+**Kill connection**
+- Terminates the entire database connection (closes all queries from that connection)
+- **Use when:** A connection is causing persistent issues or needs to be forcibly closed
+- **Example:** Kill connections from problematic clients or applications
+
+---
+
+**Kill idle connections**
+- Terminates idle connections that aren't actively running queries
+- **Use when:** Too many idle connections are consuming resources
+- **Example:** Close connections that have been idle for more than 1 hour
+
+---
+
+**Rate limit**
+- Automatically kills connections when they exceed a defined threshold to enforce the limit
+- **How it works:** If Rapydo detects multiple simultaneous connections matching the trigger, it kills enough connections to reach the defined limit
+- **Use when:** Need to limit concurrent connections from specific users or databases
+- **Example:** Limit `reporting_user` to maximum 5 concurrent connections—if 10 connections are detected, kill 5 to reach the limit
+
+**💡 Important:** Rate limit controls the NUMBER of simultaneous connections, not queries per second.
+
+---
+
+**RCA (Query Analysis)**
+- Triggers automatic AI-powered query analysis for queries matching the trigger
+- **Results are sent via email** with complete analysis and remediation plan
+- **What you get:**
+  - Root cause identification (missing indexes, inefficient joins, etc.)
+  - Step-by-step remediation plan with SQL statements
+  - Estimated performance impact
+  - Table statistics and execution plan details
+- **Use when:** You want to understand WHY queries are slow and get optimization recommendations
+- **Common trigger:** Analyze any query running longer than a defined threshold (e.g., 60 seconds)
+- **What you get:**
+  - Root cause identification (missing indexes, inefficient joins, etc.)
+  - Step-by-step remediation plan
+  - Estimated performance impact
+  - Ready-to-run SQL for fixes
+
+**💡 Important:** RCA goes beyond just identifying the problem—it provides complete solutions with implementation guidance.
+
+
+---
+
+**Notification Only**
+- Sends alert via email or webhook without taking any database action
+- The event is logged in Rapydo for audit purposes
+- **Use when:** You want visibility without automatic intervention
+- **Example:** Monitor query patterns to build baselines before taking action
+- **Use when:** 
+  - Testing rules before enabling actions
+  - Gathering data to understand query patterns
+  - Building baseline metrics before deciding on thresholds
+- **Example:** Monitor queries from `analytics_user` for one week to understand duration patterns before setting kill thresholds
+
+---
+
+## Step 5: Configure Details
+
+### Basic Settings
+
+**Type**
+- Alert rule (metric monitoring)
+- Scout rule (query monitoring)
+
+**Status**
+- **Active**: Rule is monitoring and will execute actions
+- **Disabled**: Rule is saved but inactive (useful for testing)
+
+**DB Instances**
+- **Select All**: Apply rule to all monitored instances
+- **Specific Instances**: Choose individual databases
+- **💡 Tip:** Start with specific instances, then expand to "Select All" after testing
+
+---
+
+### Alert Rule Parameters
+
+**Samples to Trigger**
+Number of consecutive checks that must exceed the threshold before alerting.
+```
+Example:
+Samples: 5
+Metric: CPU > 80%
+
+Check 1: 85% ✓ (1/5)
+Check 2: 88% ✓ (2/5)
+Check 3: 82% ✓ (3/5)
+Check 4: 90% ✓ (4/5)
+Check 5: 87% ✓ (5/5) → ALERT SENT 🚨
+```
+
+**Why this matters:** Prevents false alerts from temporary spikes. Only alerts on sustained issues.
+
+**Recommended values:**
+- Volatile metrics (CPU, IOPS): 4-5 samples
+- Critical failures (connections, deadlocks): 1-2 samples
+
+---
+
+**Notification Interval (minutes)**
+Minimum time between repeated alerts for the same condition.
+```
+Example:
+Notification Interval: 3 minutes
+Condition: CPU still > 80%
+
+Minute 0:  Alert sent 🚨
+Minute 3:  Alert sent 🚨 (3 min passed)
+Minute 6:  Alert sent 🚨 (3 min passed)
+```
+
+**Why this matters:** Prevents alert flooding while keeping you informed of ongoing issues.
+
+---
+
+## Complete Example: Scout Rule
+
+**Scenario:** Analytics queries sometimes run for hours, impacting production.
+
+**Goal:** Terminate analytics queries exceeding 10 minutes.
+
+**Configuration:**
+```
+Type: Scout rule
+Status: Active
+DB instances: production_db
+
+Trigger:
+  Query Duration > 600 seconds
+
+Filters:
+  User: analytics_user
+  Database: production_db
+
+Action: Kill Query + Send Webhook
+
+Webhook Destination: #database-alerts
+```
+
+**What happens:**
+1. Rapydo monitors all queries from `analytics_user` on `production_db`
+2. If a query runs longer than 10 minutes, it's automatically killed
+3. Webhook notification sent to Slack #database-alerts with query details
+4. Team is informed and can investigate root cause
+
+---
+
+## Complete Example: Alert Rule
+
+**Scenario:** Production database occasionally experiences CPU spikes degrading performance.
+
+**Goal:** Get alerted when CPU remains high for sustained periods.
+
+**Configuration:**
+```
+Type: Alert rule
+Status: Active
+DB instances: Select All (production instances)
+
+Metric 1:
+  Type: CPU Utilization
+  Operator: Greater than
+  Value: 80%
+
+Samples to Trigger: 5
+Notification: Webhook
+Webhook Destination: #database-ops
+Notification Interval: 3 minutes
+```
+
+**What happens:**
+1. Rapydo checks CPU every few minutes on all production instances
+2. If CPU > 80% for 5 consecutive checks (~15 minutes), webhook alert sent
+3. While CPU remains high, alerts repeat every 3 minutes
+4. If CPU drops below 80%, counter resets and alerts stop
+
+---
+
+## Best Practices
+
+✅ **Start conservative**: Higher thresholds, longer durations. Tighten after observing behavior.
+
+✅ **Use descriptive names**: "Kill Analytics Queries >10min" not "Rule 1"
+
+✅ **Leverage filters**: Target rules precisely to avoid impacting legitimate activity.
+
+✅ **Test thoroughly**: Always validate in non-production before deploying.
+
+✅ **Review regularly**: Audit rules monthly to ensure they're still relevant.
+
+✅ **Avoid alert fatigue**: Don't create so many alerts that teams start ignoring them.
+
+---
+
+## Multi-Metric Examples
+
+**Example 1: High CPU + High Connections**
+```
+Metric 1: CPU Utilization > 85%
+AND
+Metric 2: Connection Count > 200
+
+Action: Webhook to #critical-alerts
+```
+→ Only alerts when database is both CPU-bound AND connection-saturated
+
+---
+
+**Example 2: Query Performance Degradation**
+```
+Metric 1: Query Avg Time > 5 seconds
+AND
+Metric 2: Locks > 50
+
+Action: Webhook to #database-ops
+```
+→ Alerts when slow queries correlate with high lock contention
+
+---
+
+## What's Next?
+
+- [Scout Rules Reference](/automation/scout_triggers_and_actions) - Complete guide to Scout Rules
+- [Alert Rules Reference](/automation/alerts_triggers_and_actions) - Complete guide to Alert Rules
+- [Back to Automation Overview](/automation/introduction) - Return to main automation page
