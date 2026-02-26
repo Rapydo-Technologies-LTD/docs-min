@@ -192,11 +192,7 @@ When a Scout Rule is triggered, you can execute one of these actions:
   - Table statistics and execution plan details
 - **Use when:** You want to understand WHY queries are slow and get optimization recommendations
 - **Common trigger:** Analyze any query running longer than a defined threshold (e.g., 60 seconds)
-- **What you get:**
-  - Root cause identification (missing indexes, inefficient joins, etc.)
-  - Step-by-step remediation plan
-  - Estimated performance impact
-  - Ready-to-run SQL for fixes
+
 
 **💡 Important:** RCA goes beyond just identifying the problem—it provides complete solutions with implementation guidance.
 
@@ -208,11 +204,6 @@ When a Scout Rule is triggered, you can execute one of these actions:
 - The event is logged in Rapydo for audit purposes
 - **Use when:** You want visibility without automatic intervention
 - **Example:** Monitor query patterns to build baselines before taking action
-- **Use when:** 
-  - Testing rules before enabling actions
-  - Gathering data to understand query patterns
-  - Building baseline metrics before deciding on thresholds
-- **Example:** Monitor queries from `analytics_user` for one week to understand duration patterns before setting kill thresholds
 
 ---
 
@@ -360,7 +351,7 @@ Notification Interval: 3 minutes
 ```
 Metric 1: CPU Utilization > 85%
 AND
-Metric 2: Connection Count > 200
+Metric 2: Connection Count > 200 
 
 Action: Webhook to #critical-alerts
 ```
@@ -370,9 +361,9 @@ Action: Webhook to #critical-alerts
 
 **Example 2: Query Performance Degradation**
 ```
-Metric 1: Query Avg Time > 5 seconds
+Metric 1: Max Query Duration > 30 seconds
 AND
-Metric 2: Locks > 50
+Metric 2: Waits count > 50
 
 Action: Webhook to #database-ops
 ```
