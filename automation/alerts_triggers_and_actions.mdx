@@ -13,7 +13,7 @@ Alert Rules monitor database and system metrics, sending notifications when perf
 
 **Triggers** — Events or conditions defined by you that activate the rule
 - Example: CPU Utilization exceeds 90%
-- Example: Free Memory drops below 2 GB
+- Example: Free Memory drops below 2048 MB
 
 **Actions** — Measures the system takes when trigger conditions are met
 - Example: Send email notification
@@ -39,9 +39,9 @@ Alert Rules monitor database and system metrics, sending notifications when perf
 
 **Free Memory**
 - Available RAM on the database instance
-- **Unit:** Gigabytes (GB)
+- **Unit:** Megabytes (MB)
 - **Use when:** Preventing out-of-memory errors
-- **Example:** Alert when Free Memory < 2 GB
+- **Example:** Alert when Free Memory < 2048 MB
 
 ---
 
@@ -130,10 +130,20 @@ Use operators to define threshold conditions for your triggers:
 - Trigger when metric exceeds the threshold
 - Example: CPU Utilization > 80%
 
+**Greater Than or Equal**
+- Symbol: `>=`
+- Trigger when metric meets or exceeds the threshold
+- Example: CPU Utilization >= 80%
+
 **Less Than**
 - Symbol: `<`
 - Trigger when metric falls below the threshold
-- Example: Free Memory < 2 GB
+- Example: Free Memory < 2048 MB
+
+**Less Than or Equal**
+- Symbol: `<=`
+- Trigger when metric meets or falls below the threshold
+- Example: Free Memory <= 2048 MB
 
 ---
 
@@ -151,10 +161,14 @@ Use operators to define threshold conditions for your triggers:
   - **Recipients:** List of email addresses (comma-separated)
   - **Subject:** Auto-generated based on trigger
   - **Content:** Metric values, threshold, timestamp, instance details
+  - **Mail per instance:** Toggle to control how alerts are grouped
+    - **Checked:** A separate email is sent for each database that triggers the alert
+    - **Unchecked:** A single summary email covers all triggered databases
 
 **Example:**
 ```
 Recipients: dba-team@company.com, ops-alerts@company.com
+Mail per instance: Enabled
 ```
 
 ---
@@ -306,7 +320,7 @@ Metric 2: Connection Utilization > 80%
 
 **Memory Pressure with High Activity:**
 ```
-Metric 1: Free Memory < 2 GB
+Metric 1: Free Memory < 2048 MB
 AND
 Metric 2: Connections Count > 150
 ```
@@ -366,7 +380,7 @@ DB Instances: production-db-01, production-db-02
 Metric 1:
   Type: Free Memory
   Operator: Less than
-  Value: 2 GB
+  Value: 2048 MB
 
 Samples to Trigger: 3
 Notification: Email + Webhook

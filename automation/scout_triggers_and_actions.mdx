@@ -372,6 +372,13 @@ Advanced trigger that executes a custom SQL query. If the query returns any data
 
 **Value:** Enter SQL query that returns data when condition is met
 
+**Action Restrictions:**
+When a Custom Script trigger is used, only the following actions are available:
+- Kill Query
+- Kill Connection
+- Notification Only
+- Custom Script (action)
+
 **Use Cases:**
 
 - **Complex business rules**: Combine multiple conditions beyond standard triggers
@@ -507,7 +514,13 @@ Result: If reporting_user has 10 concurrent connections,
 
 ### **Query Analysis (RCA)**
 
-Triggers AI-powered query analysis for queries matching the trigger conditions. Results include root cause identification and complete remediation plan sent via email.
+Triggers AI-powered query analysis for queries matching the trigger conditions. Results include root cause identification and complete remediation plan sent via email or webhook.
+
+**Available With These Triggers Only:**
+Query Analysis (RCA) is only available when the rule includes at least one of:
+- Query Duration
+- Query Pattern
+- Custom Script
 
 **How It Works:**
 - Query matching triggers is automatically analyzed by Rapydo AI
@@ -516,7 +529,22 @@ Triggers AI-powered query analysis for queries matching the trigger conditions. 
   - Step-by-step remediation plan with ready-to-run SQL
   - Estimated performance impact
   - Table statistics and execution plan details
-- Complete analysis report is emailed to configured recipients
+- Complete analysis report is sent to configured notification targets
+
+**Notification Interval:**
+Configure how frequently RCA reports are sent to avoid alert fatigue:
+
+| Interval | Value |
+|---|---|
+| 15 minutes | 15 min |
+| 30 minutes | 30 min |
+| 45 minutes | 45 min |
+| 1 hour | 60 min |
+| 3 hours | 180 min |
+| 6 hours | 360 min |
+| 9 hours | 540 min |
+| 12 hours | 720 min |
+| 24 hours | 1440 min |
 
 **Use When:**
 - You want to understand WHY queries are slow, not just kill them
@@ -630,11 +658,13 @@ Result: Team is alerted to potentially dangerous query,
 
 **Toggle:** Active/Inactive
 
-**Email:** Enter one or more notification email addresses (comma-separated)
+**Notification Method:** Choose how to receive alerts:
+- **Email**: Enter one or more email addresses (comma-separated)
+- **Webhook**: Enter a webhook URL to receive POST notifications
 
 **When Notifications Are Sent:**
 - Rule triggers and action is executed
-- Email includes:
+- Notification includes:
   - Trigger conditions that were met
   - Action that was taken
   - Query details (SQL text, duration, user, database)
