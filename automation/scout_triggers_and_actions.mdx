@@ -120,22 +120,22 @@ Matches running queries against patterns using SQL LIKE syntax with `%` wildcard
 
 #### **Simple Pattern Examples**
 
-**Security - Block Destructive Operations:**
+**Security - Detect Destructive Operations:**
 ```sql
 Pattern: %DROP TABLE%
-Result: Blocks any query attempting to drop tables
+Result: Triggers the configured action (e.g., Kill Query) for any query attempting to drop tables
 ```
 
-**Performance - Block Queries Without LIMIT:**
+**Performance - Detect Queries Without LIMIT:**
 ```sql
 Pattern (Not Like): %LIMIT%
-Result: Blocks SELECT queries missing pagination
+Result: Triggers the configured action (e.g., Kill Query) for SELECT queries missing pagination
 ```
 
 **Compliance - Monitor Sensitive Data Access:**
 ```sql
 Pattern: %SELECT * FROM salary%
-Result: Alerts when salary table is queried
+Result: Triggers the configured action (e.g., Notification Only) when the salary table is queried
 ```
 
 ---
@@ -649,7 +649,7 @@ Action: Notification Only
 Email: security-team@company.com
 
 Result: Team is alerted to potentially dangerous query,
-        but query is not blocked (allows investigation)
+        but no action is taken on the query (allows investigation)
 ```
 
 ---
@@ -735,7 +735,8 @@ Trigger 1: Query pattern LIKE "%DROP TABLE%"
 Trigger 2: User NOT In "admin, dba"
 Trigger 3: DB name In "production_db"
 
-Action: Kill query + Notification
+Action: Kill query
+Notification: Active
 ```
 
 **Result:** Only triggers for queries that:
@@ -835,9 +836,9 @@ Email: ops-team@company.com
 
 ---
 
-### Example 4: Block Dangerous Patterns
+### Example 4: Kill Dangerous Query Patterns
 
-**Scenario:** Prevent destructive operations from non-admin users
+**Scenario:** Terminate destructive operations from non-admin users
 
 **Configuration:**
 ```
@@ -851,7 +852,7 @@ Notification: Active
 Email: security-team@company.com
 ```
 
-**Result:** DROP TABLE attempts from non-admins are blocked and reported
+**Result:** DROP TABLE attempts from non-admins are killed and reported
 
 ---
 
@@ -944,4 +945,3 @@ Email: dba-team@company.com
 - [Defining Rules](/automation/defining_rules) - Step-by-step guide to creating rules
 - [Alert Rules Reference](/automation/alerts_triggers_and_actions) - Complete Alert Rules documentation
 - [Automation Overview](/automation/introduction) - Return to automation overview
-```

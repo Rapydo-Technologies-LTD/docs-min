@@ -93,7 +93,7 @@ Alert Rules monitor database and system metrics, sending notifications when perf
 - Number of database schemas on the instance
 - **Unit:** Count (integer)
 - **Use when:** Detecting unexpected database creation/deletion
-- **Example:** Alert when DB Count changes
+- **Example:** Alert when DB Count > 10
 
 ---
 
@@ -383,9 +383,8 @@ Metric 1:
   Value: 2048 MB
 
 Samples to Trigger: 3
-Notification: Email + Webhook
+Notification: Email
 Email Recipients: dba-team@company.com
-Webhook Destination: #critical-alerts
 Notification Interval: 5 minutes
 ```
 
@@ -431,9 +430,8 @@ Metric 2:
   Value: 50
 
 Samples to Trigger: 3
-Notification: Email + Webhook
+Notification: Email
 Email Recipients: dba-team@company.com
-Webhook Destination: #database-critical
 Notification Interval: 5 minutes
 ```
 
@@ -480,7 +478,7 @@ Notification Interval: 3 minutes
 
 ✅ **Test rules in non-production** before deploying to critical instances
 
-✅ **Configure both email and webhook** for important alerts
+✅ **Use webhook for team channels** (Slack, Teams) and **email for individual recipients** — each rule supports one notification method
 
 ✅ **Review and adjust thresholds** based on actual workload patterns
 
