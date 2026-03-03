@@ -15,7 +15,11 @@ AI DBA Assistant transforms how you interact with your databases. Instead of wri
 
 Access the Assistant from the left navigation panel under **AI DBA → Assistant**. The interface is straightforward: type your question in the input field and press enter or click the send button.
 
-**Important:** Each question is handled independently—there's no conversation memory between messages, so include all relevant context in each question.
+**Conversation Controls:**
+- **New conversation** — Starts a fresh conversation, clearing the current context
+- **Clear history** — Removes all messages from the current view (disabled when no messages exist)
+
+**Important:** The Assistant maintains conversation history within a session using a conversation ID. However, each new conversation starts fresh with no memory of previous sessions. Include all relevant context when starting a new conversation or asking follow-up questions that reference earlier messages.
 
 **Example first question:**
 > "Show me the top 3 longest queries from the last day"
@@ -207,21 +211,18 @@ If you want recommendations and remediation plans, explicitly ask for analysis.
 
 ## How It Works
 
-Assistant queries **RapydoDB**—Rapydo's dedicated monitoring database where all your fleet's performance data is stored. This architecture provides significant advantages:
+Assistant uses two data sources depending on the type of question asked:
 
-### **Zero Impact on Production**
-Assistant never connects to your production database instances directly. All analysis runs against pre-collected monitoring data in RapydoDB, so your production databases experience no additional load.
+- **RapydoDB** — Rapydo's dedicated monitoring database, queried for performance metrics, process history, slow queries, CPU/memory trends, locks, and fleet-wide activity data.
+- **Your database instances** — Queried directly for schema information and data retrieval intents (e.g., listing tables, retrieving schema details).
 
 ### **Fast Responses**
-Because the data is already aggregated in RapydoDB, queries return quickly regardless of your fleet size. No need to wait for real-time data collection.
-
-### **Safe Exploration**
-Ask as many questions as you want. There's no risk of accidentally running expensive queries against production systems.
+Performance and monitoring data is already aggregated in RapydoDB, so those queries return quickly regardless of your fleet size.
 
 ### **Historical Analysis**
 All monitoring data is retained in RapydoDB, enabling you to investigate past incidents and identify long-term trends.
 
-**💡 Important:** The Assistant analyzes monitoring data only. It cannot modify your production databases, execute commands, or access application data.
+**💡 Important:** The Assistant cannot modify your production databases or execute DML/DDL commands. It is read-only in all cases.
 
 ---
 

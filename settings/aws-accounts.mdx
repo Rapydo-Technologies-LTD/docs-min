@@ -28,7 +28,7 @@ Click **Add AWS Account Configuration** to open the configuration form.
 
 ### Configuration Fields
 
-<ParamField body="Account Name" type="string" required>
+<ParamField body="Account Name" type="string">
   A friendly name to identify this AWS account in Rapydo (e.g., "Production", "Staging", "Analytics").
 </ParamField>
 
@@ -36,9 +36,9 @@ Click **Add AWS Account Configuration** to open the configuration form.
   Your 12-digit AWS account number. You can find this in the AWS Console under your account settings.
 </ParamField>
 
-<ParamField body="Role ARN" type="string" required>
+<ParamField body="Role ARN" type="string">
   The Amazon Resource Name (ARN) of the IAM role that Rapydo will assume to access your account. This role must have permissions to describe RDS instances and access CloudWatch metrics.
-  
+
   Example format: `arn:aws:iam::123456789012:role/RapydoMonitoringRole`
 </ParamField>
 
@@ -57,6 +57,6 @@ The AWS accounts list displays all configured accounts with:
 | AWS Account ID | 12-digit AWS account number |
 | Role ARN | IAM role ARN for access |
 
-Use the action menu on each row to edit or delete existing account configurations.
+Use the action menu on each row to delete existing account configurations.
 
 **Table Settings** — Customize which columns are displayed in the list.

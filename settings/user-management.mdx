@@ -1,12 +1,68 @@
-# User Management
+# Users
 
-Create and manage Rapydo users via API.
+Create and manage Rapydo users directly from the Users settings page.
 
 ## Overview
 
-User management in Rapydo is handled exclusively through the API. There is no user interface for creating or managing users. This guide explains how to create users using command-line tools.
+The **Users** settings page provides a full interface for managing user accounts. Administrators can add users, reset passwords, change roles, and delete users without needing API access.
 
-## Creating a New User
+## Users Table
+
+The Users table lists all existing users with the following columns:
+
+| Column | Description |
+|--------|-------------|
+| Name | The user's username |
+| Role | The user's role: **Admin** or **Read Only** |
+| Actions | Per-row action menu |
+
+### Row Actions
+
+Use the action menu on each row to:
+
+- **Reset Password** — Set a new password for the user
+- **Change Role** — Switch the user's role between Admin and Read Only (disabled for your own account)
+- **Delete** — Remove the user (disabled for your own account)
+
+## Adding a User
+
+Click **Add User** to open the user creation panel.
+
+### Fields
+
+<ParamField body="Username" type="string" required>
+  The login username for the new user.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  The initial password for the new user.
+</ParamField>
+
+<ParamField body="Role" type="string" required>
+  Select the user's access level:
+  - **Admin** — Full access to all features and settings
+  - **Read Only** — View-only access to dashboards and monitoring
+</ParamField>
+
+<ParamField body="Force user to change password on next login" type="boolean">
+  When enabled, the user will be prompted to set a new password on their first login.
+</ParamField>
+
+### Actions
+
+- **Save** — Create the user
+- **Cancel** — Discard and close the panel
+
+## User Roles
+
+| Role | Description |
+|------|-------------|
+| **Admin** | Full access to all features and settings including Query Analysis, Execute Query, Scout Rules, Alerts, and Settings configuration |
+| **Read Only** | View-only access to dashboards and monitoring. Cannot modify settings or configurations |
+
+## API Reference
+
+Users can also be created via API. This is useful for scripted provisioning or environments without UI access.
 
 ### Prerequisites
 
@@ -16,15 +72,11 @@ User management in Rapydo is handled exclusively through the API. There is no us
 
 ### Step 1: SSH into the Machine
 
-Connect to your Rapydo instance via SSH:
-
 ```bash
 ssh user@your-rapydo-instance
 ```
 
 ### Step 2: Obtain an Authentication Token
-
-Use your admin credentials to get an access token:
 
 ```bash
 TOKEN=$(curl -sS --location 'http://127.0.0.1:8000/v1/users/login' \
@@ -32,11 +84,9 @@ TOKEN=$(curl -sS --location 'http://127.0.0.1:8000/v1/users/login' \
 --form 'password="admin"' | jq -r .access_token)
 ```
 
-**Important:** Adjust the username and password according to your environment. The default admin credentials should be changed after initial setup.
+Adjust the username and password to match your environment.
 
 ### Step 3: Create the User
-
-Use the token to create a new user:
 
 ```bash
 curl --location 'http://127.0.0.1:8000/v1/users/' \
@@ -45,30 +95,13 @@ curl --location 'http://127.0.0.1:8000/v1/users/' \
 --data '{
     "username": "user",
     "password": "user",
-    "type": "read_only"
+    "role": "read_only"
 }'
 ```
 
-Change the `username`, `password`, and `type` values as needed.
+Change `username`, `password`, and `role` as needed. Valid `role` values: `admin`, `read_only`.
 
-## User Types
-
-Rapydo supports two user types:
-
-**admin** — Full access to all features and settings including:
-- All dashboard and monitoring features
-- Query Analysis and Assistant
-- Settings configuration
-- User management (via API)
-
-**read_only** — View-only access including:
-- Dashboard viewing
-- Query and instance monitoring
-- No ability to modify settings or configurations
-
-## API Reference
-
-### Login
+### Login Endpoint
 
 ```
 POST http://127.0.0.1:8000/v1/users/login
@@ -85,7 +118,7 @@ Response:
 }
 ```
 
-### Create User
+### Create User Endpoint
 
 ```
 POST http://127.0.0.1:8000/v1/users/
@@ -96,8 +129,6 @@ Body:
 {
   "username": "string",
   "password": "string",
-  "type": "admin" | "read_only"
+  "role": "admin" | "read_only"
 }
 ```
-
-

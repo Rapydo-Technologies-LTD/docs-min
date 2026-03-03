@@ -28,7 +28,7 @@ This widget displays the time range for the data represented in the graphs and m
 
 ## Instance & Health Metrics
 
-### DB Instances
+### DB Instances Status
 
 This widget displays the total number of database instances across three states:
 - **Active**: Instances currently running and accepting connections
@@ -60,7 +60,7 @@ Displays the current number of active users versus idle users across your databa
 **Optimization tip:**
 A high idle user count with low activity might indicate a need for session timeout adjustments or automated cleanup of inactive connections to free up resources.
 
-### Clients
+### Number of Clients
 
 This metric shows the total number of active database clients. A client refers to an application or user connection to the database.
 
@@ -73,7 +73,7 @@ This metric shows the total number of active database clients. A client refers t
 
 ## Query Performance Metrics
 
-### Query Average Time
+### Query AVG Time
 
 This widget shows the average query execution time across all database instances over the selected time range. It provides a quick snapshot of overall query performance.
 
@@ -95,13 +95,41 @@ This metric helps identify potential bottlenecks and inefficiencies:
 **Action item:**
 Click through to see the actual query and use Rapydo's Query Analysis feature for optimization recommendations.
 
+### Query Throttling
+
+Displays the number of queries currently throttled by active Scout Rules. When a rate-limit action is triggered, the throttled query count is reflected here.
+
+**Why this matters:**
+- A non-zero value means Scout Rules are actively controlling query concurrency
+- Helps confirm that throttling rules are firing as expected
+
+### Caching
+
+Shows the current caching activity and efficiency across your database instances.
+
+**What to watch for:**
+- Low cache hit rates may indicate opportunities to optimize query patterns
+- Sudden drops in caching efficiency can indicate configuration or workload changes
+
 ---
 
 ## Database Locking & Contention
 
+### Locks & Deadlocks
+
+This graph shows both locks and deadlocks over time across your database instances, giving a combined view of locking contention.
+
+**Understanding locks:**
+Database locks are mechanisms to control concurrent access to data during transactions. While normal, excessive locking can indicate contention issues.
+
+**What to investigate:**
+- Large spikes in lock or deadlock counts
+- Sustained high lock levels
+- Correlation between locks and slow queries
+
 ### Deadlocks
 
-This shows the number of deadlocks encountered across all databases during the selected time range. 
+This counter shows the total number of deadlocks encountered across all databases during the selected time range.
 
 **What are deadlocks?**
 Deadlocks occur when two or more queries block each other, preventing further execution. For example:
@@ -113,18 +141,6 @@ Deadlocks occur when two or more queries block each other, preventing further ex
 - Deadlocks can cause transaction failures
 - May indicate poor transaction design or locking strategies
 - Repeated deadlocks suggest the need for query refactoring
-
-### Locks
-
-This graph shows the number of locks held at different time points across your database instances. 
-
-**Understanding locks:**
-Database locks are mechanisms to control concurrent access to data during transactions. While normal, excessive locking can indicate contention issues.
-
-**What to investigate:**
-- Large spikes in lock counts
-- Sustained high lock levels
-- Correlation between locks and slow queries
 
 ---
 
@@ -145,7 +161,7 @@ If an instance consistently runs above 80% CPU, consider:
 - Scaling to a larger instance size
 - Distributing load across additional instances
 
-### Max Connections
+### Max Connections Usage
 
 This graph displays the percentage of maximum database connections being used across different instances over time.
 
@@ -160,7 +176,7 @@ Each database instance has a connection limit. When you approach this limit:
 - Implement connection pooling in applications
 - Consider scaling instance size if sustained high connection usage occurs
 
-### IOPS
+### IOPS Usage
 
 This graph shows Input/Output Operations Per Second (IOPS) for each database instance. IOPS measures the performance of your storage system.
 
@@ -210,12 +226,12 @@ Each widget provides a gateway to more detailed information:
 | **Widget** | **Detailed View Shows** |
 |-----------|------------------------|
 | **Longest Query** | All running queries sorted by duration, with ability to analyze or kill queries |
-| **Locks** | Active locks, blocking queries, wait times, and transaction details |
+| **Locks & Deadlocks** | Active locks, blocking queries, wait times, and transaction details |
 | **Deadlocks** | Deadlock history, involved queries, and resolution timeline |
-| **CPU Usage** | Per-instance CPU trends, peak usage times, and resource-intensive queries |
-| **Connections** | Connection pool status, active vs idle connections, connection history |
-| **IOPS** | Disk I/O patterns, read/write breakdown, storage performance trends |
-| **DB Instances** | Full instance details, health checks, configuration, and metrics |
+| **Max CPU Usage** | Per-instance CPU trends, peak usage times, and resource-intensive queries |
+| **Max Connections Usage** | Connection pool status, active vs idle connections, connection history |
+| **IOPS Usage** | Disk I/O patterns, read/write breakdown, storage performance trends |
+| **DB Instances Status** | Full instance details, health checks, configuration, and metrics |
 
 **Pro Tip:** Click on any metric that looks unusual or concerning to investigate further and take immediate action.
 
@@ -225,16 +241,17 @@ Each widget provides a gateway to more detailed information:
 
 | **Metric** | **Investigate When** |
 |-----------|---------------------|
-| **DB Instances** | Instances are stopped unexpectedly |
-| **Connection Health** | Unhealthy connections appear |
+| **DB Instances Status** | Instances are stopped unexpectedly |
+| **DB Connection Health** | Unhealthy connections appear |
 | **User Activity** | High idle users with low activity |
-| **Query Avg Time** | Sudden increase vs. baseline |
+| **Query AVG Time** | Sudden increase vs. baseline |
 | **Longest Query** | Exceeds acceptable thresholds |
 | **Deadlocks** | Any deadlocks occur |
-| **Locks** | Large spikes or sustained high counts |
-| **CPU Usage** | Sustained >80% or spikes to 100% |
-| **Max Connections** | Approaching 90% utilization |
-| **IOPS** | Sustained high levels or unusual spikes |
+| **Locks & Deadlocks** | Large spikes or sustained high counts |
+| **Max CPU Usage** | Sustained >80% or spikes to 100% |
+| **Max Connections Usage** | Approaching 90% utilization |
+| **IOPS Usage** | Sustained high levels or unusual spikes |
+| **Query Throttling** | Non-zero count appears unexpectedly |
 
 ---
 

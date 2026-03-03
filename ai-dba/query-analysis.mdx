@@ -30,7 +30,7 @@ Configure your analysis with these required fields:
 
 **Database** — Choose the specific database on that server.
 
-**Schema** — Optionally select a schema to provide additional context.
+**Schema** — Optionally select a schema to provide additional context. Available for **PostgreSQL only**; this field is disabled for MySQL instances.
 
 **SQL Query** — Enter or paste the query you want to analyze. The editor provides syntax highlighting for readability.
 
@@ -54,7 +54,7 @@ When viewing queries in any query workspace (like Process count history or other
 
 ### From Dashboard
 
-Dashboard widgets like "Longest Query" display your slowest queries. Each query row includes an **Analyze Query** button that opens Query Analysis with all fields pre-filled for immediate analysis.
+Dashboard widgets like **Longest Query** and **Query Avg Time** display your slowest queries. Each query row includes an **Analyze Query** button that opens Query Analysis with all fields pre-filled for immediate analysis.
 
 ---
 
@@ -249,9 +249,20 @@ Findings are presented as specific, actionable items rather than generic advice:
 
 ---
 
+### Results Panel Controls
+
+Each analysis result in the panel has the following controls:
+
+- **Delete** (trash icon) — Removes that specific analysis from the results panel
+- **Reanalyze** — Opens the **Reanalyze settings** dialog, pre-filled with the original query and settings, to run a fresh analysis
+- **Metadata** — Opens the raw metadata viewer (execution plan, table statistics, indexes, schema)
+- **Clear history** (top of results panel) — Removes all analyses from the panel at once
+
+---
+
 ### Reanalyze
 
-After making changes to your database (like adding an index or updating statistics), click **Reanalyze** to run a fresh analysis and verify the improvement.
+After making changes to your database (like adding an index or updating statistics), click **Reanalyze** to open the **Reanalyze settings** dialog and run a fresh analysis to verify the improvement.
 
 **What Reanalyze checks:**
 - ✅ New execution plan with improved costs

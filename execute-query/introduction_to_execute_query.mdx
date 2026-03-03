@@ -17,3 +17,28 @@ The Execute Query View plays a vital role in database performance tuning and tro
 In addition to these functionalities, the Execute Query View also provides enhanced security control through templates like **View User Privileges**, allowing administrators to quickly review and manage user access rights across databases. This feature is critical for maintaining data security and ensuring compliance with internal or external security policies.
 
 In summary, the Execute Query View is an indispensable tool for database administrators looking to efficiently manage multiple database instances. Its flexibility, combined with powerful templates, the ability to save and reuse queries, and its organized tabbed interface, provides users with the tools they need to optimize performance, maintain consistency, and ensure the security of their database environments. Whether running ad-hoc queries, diagnosing performance issues, or performing regular maintenance, the Execute Query View is a vital component of any robust database management system.
+
+---
+
+## Key Technical Notes
+
+**Read-Only Enforcement**
+All queries executed through the Execute Query View are enforced as **read-only** at the database session level. MySQL sessions use `SET SESSION TRANSACTION READ ONLY` and PostgreSQL sessions use the equivalent session-level setting. DML and DDL operations (INSERT, UPDATE, DELETE, DROP, etc.) are not permitted.
+
+**Row Limits**
+If your query does not include a `LIMIT` clause, a default limit of **1,000 rows** is automatically applied. If your query already includes a `LIMIT` clause, that value is always respected — including values larger than 1,000 (e.g., `LIMIT 5000`). A message is shown in the result when a limit was automatically added.
+
+**Canceling Queries**
+There is no enforced execution timeout. Use the **Cancel** button to stop a long-running query at any time while it is executing.
+
+**Querying RapydoDB**
+In addition to your production database instances, you can select **Rapydo-DB** from the instance selector to run queries directly against RapydoDB — Rapydo's internal monitoring database. This is useful for exploring performance metrics, process history, and monitoring data.
+
+**PostgreSQL: Database Name Required**
+When one or more PostgreSQL instances are selected, a **"Connected to database"** field appears in the interface. This field must be filled before the **Execute** button becomes active. Use it to specify which database on the PostgreSQL server to connect to.
+
+**Running a Selected Portion of a Query**
+When text is selected in the SQL editor, the **Execute** button changes to **Run Selection**, allowing you to run only the highlighted portion of the query without executing the full script.
+
+**Keyboard Shortcut**
+Use **Cmd+Enter** (Mac) or **Ctrl+Enter** (Windows/Linux) to execute the query without clicking the Execute button.
