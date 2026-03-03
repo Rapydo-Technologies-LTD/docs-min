@@ -1,37 +1,46 @@
 #### Cache Rules List
 
-<img
-  className="block dark:block"
-  src="/images/automation/cache/automation1.png"
-  alt="Triggers and Actions"
-/>
+Cache Rules are listed in a table showing the match type, invalidation type, TTL (if applicable), and query pattern for each rule. Rules are only active when the Global Cache State is set to **Partial**.
 
 #### Cache TTL based for children table queries
 
-<img
-  className="block dark:block"
-  src="/images/automation/cache/automation2.png"
-  alt="Triggers and Actions"
-/>
+Cache reads from a child table with automatic time-based expiration:
+
+```
+Match Type: Like
+Pattern: select !@! from children !@!
+Invalidation Type: TTL
+TTL: 300000 (5 minutes in milliseconds)
+```
+
+Result: Any SELECT query matching the pattern is served from cache for up to 5 minutes. After the TTL expires, the cache entry is automatically removed regardless of write activity on the table.
 
 #### Cache heavy read tables
 
-<img
-  className="block dark:block"
-  src="/images/automation/cache/automation3.png"
-  alt="Triggers and Actions"
-/>
+Cache all reads from a heavily accessed reference table, invalidating automatically on writes:
+
+```
+Match Type: Like
+Pattern: select !@! from products !@!
+Invalidation Type: Table Based
+```
+
+Result: All matching SELECT queries are served from cache. When any write query (INSERT, UPDATE, DELETE) targets the products table, all related cache entries are automatically invalidated.
 
 #### Cache from a specific table
 
-<img
-  className="block dark:block"
-  src="/images/automation/cache/automation4.png"
-  alt="Triggers and Actions"
-/>
+Cache all queries targeting a specific lookup or configuration table:
+
+```
+Match Type: Like
+Pattern: select !@! from config_settings !@!
+Invalidation Type: Table Based
+```
+
+Result: Reads from the config_settings table are served from cache until any write to that table triggers automatic invalidation, ensuring cached data stays consistent.
 
 #### General Cache control
 
 * Cache all queries
 * Cache none of the queries
-* Cache some queries according to the above rules (Parial mode)  
+* Cache some queries according to the above rules (Partial mode)

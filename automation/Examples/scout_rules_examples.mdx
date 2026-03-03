@@ -1,47 +1,85 @@
 #### Scout Rules List
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation1.jpg"
-  alt="Triggers and Actions"
-/>
+Scout Rules are listed in a table showing the rule name, status, trigger conditions, action, and notification settings. Each rule can be enabled or disabled independently without deleting it.
 
 #### Kill long Queries
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation2.png"
-  alt="Triggers and Actions"
-/>
+Stop runaway queries that exceed an acceptable execution duration:
+
+```
+DB Instances: Select All
+
+Trigger 1: Query Duration > 300 seconds
+
+Action: Kill Query
+Notification: Active
+Email: dba-team@company.com
+```
+
+Result: Any query running longer than 5 minutes is automatically killed. The DBA team receives an email notification with the query text, duration, user, and database instance.
 
 #### Limit User's Concurrency
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation3.png"
-  alt="Triggers and Actions"
-/>
+Prevent a specific user from opening too many simultaneous connections:
 
-#### Lock user for three days
+```
+DB Instances: production-db-01
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation4.png"
-  alt="Triggers and Actions"
-/>
+Trigger 1: User In "reporting_user"
+
+Action: Rate Limit
+Value: 5 concurrent connections
+```
+
+Result: If the reporting user has more than 5 active connections at the same time, excess connections are automatically killed until the limit is reached.
+
+#### Kill all connections from a specific user
+
+Terminate all active connections from a specific user to remove their database access:
+
+```
+DB Instances: Select All
+
+Trigger 1: User In "suspended_user"
+
+Action: Kill Connection
+Notification: Active
+Email: security-team@company.com
+```
+
+Result: Any active connection from the specified user is terminated as soon as it is detected. This effectively prevents that user from maintaining a database session while the rule remains active.
 
 #### Limit Database Access
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation5.png"
-  alt="Triggers and Actions"
-/>
+Apply strict query duration limits to a production database, excluding authorized users:
+
+```
+DB Instances: production-db-01
+
+Trigger 1: Query Duration > 60 seconds
+Trigger 2: User Not In "admin, dba, prod_app_user"
+
+Action: Kill Query
+Notification: Active
+Email: ops-team@company.com
+```
+
+Result: Queries on the production database running longer than 60 seconds are killed — but only for unauthorized users. Admins, DBAs, and the production application user are excluded.
 
 #### Limit User's Rate
 
-<img
-  className="block dark:block"
-  src="/images/automation/scout/automation6.png"
-  alt="Triggers and Actions"
-/>
+Cap the maximum concurrent connections for an analytics or reporting user:
+
+```
+DB Instances: analytics-db-01
+
+Trigger 1: User In "analytics_user"
+Trigger 2: DB Name In "analytics_db"
+
+Action: Rate Limit
+Value: 3 concurrent connections
+Notification: Active
+Email: ops-team@company.com
+```
+
+Result: The analytics user is limited to 3 simultaneous connections on the analytics database. Excess connections are killed automatically. The ops team is notified each time the limit is enforced.

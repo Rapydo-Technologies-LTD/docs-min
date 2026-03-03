@@ -2,68 +2,43 @@
 
 The Queries View provides a detailed view of ongoing and past queries, providing specifics like query text, start time, execution duration, and more. Advanced filtering options let users sort and filter this data by various metrics, such as duration, to quickly isolate long-running or resource-intensive queries.
 
-<img
-  className="block dark:block"
-  src="/images/queries/full-page.jpg"
-  alt="Queries View"
-/>
+### DB Instance Selector
 
-### Query History
+Use the **DB Instance** dropdown in the top filter bar to select which database instance to monitor. The view updates in real time based on the selected instance.
 
-The query history chart provides a comprehensive overview of past queries. This historical data is crucial for diagnosing problems, planning capacity, and preparing for future demands by understanding past trends and behaviors.
+### Process Count History
 
-<img
-  className="block dark:block"
-  src="/images/queries/history.jpg"
-  alt="Queries History Table"
-/>
+The process count history chart shows three data series over time:
 
-### Total Executing Queries
+- **Active processes** (blue) — the number of queries actively executing
+- **Locks** (orange) — the number of locks held
+- **Deadlocks** (red) — the number of deadlocks detected
 
-The total executing queries chart provides a real-time snapshot of the number of queries currently being executed on your MySQL server. This metric is essential for understanding the current load on your database and identifying potential bottlenecks or performance issues.
+This combined view makes it easy to correlate spikes in locks or deadlocks with peaks in active process count, helping diagnose contention and performance issues.
 
-<img
-  className="block dark:block"
-  src="/images/queries/total-processes.jpg"
-  alt="Queries Total Proccesses"
-/>
+### Total Processes
 
-### Executing Query & Query Duration
+The total processes bar provides a real-time snapshot of the number of queries currently being executed on your database. It shows the current active process count against the maximum connection limit, helping you understand the current load on your database and identify potential bottlenecks.
 
-The executing query and query duration provides a information regrading the current running query, including the query text, start time, execution duration, and more. This real-time visibility is crucial for database administrators who need to ensure optimal performance and quick troubleshooting.
+### Longest Running Query
 
-<img
-  className="block dark:block"
-  src="/images/queries/query-and-duration.jpg"
-  alt="Queries Duration and Query String"
-/>  
+Displays the longest currently running query, including its execution duration and full query text. This real-time visibility is crucial for database administrators who need to ensure optimal performance and quick troubleshooting.
 
 ### Locks & Waits
 
-The locks and waits count provides insights into the queries that are currently waiting for locks or resources to be released. This metric is essential for identifying potential bottlenecks and performance issues caused by locking contention.
+The locks and waits count provides insights into the queries that are currently waiting for locks or resources to be released. This metric is essential for identifying potential bottlenecks and performance issues caused by locking contention. The count is color-coded: gray (< 10), yellow (10–20), red (≥ 20). Click to open a detailed locks table.
 
-<img
-  className="block dark:block"
-  src="/images/queries/locks-and-waits.jpg"
-  alt="Queries Locks And Waits"
-/>  
+### Pie Charts
 
-### Pie Chart View
+Four pie charts break down query statistics into visual segments showing the proportional distribution across your database activity:
 
-For a more graphical representation, the pie chart view breaks down query statistics into visual segments, making it easy to digest the proportional impact of different queries on your system. This can be particularly useful for presentations and quick assessments during team meetings or reports.
+- **Users** — Distribution of queries by database user
+- **Commands** — Distribution by command type (SELECT, INSERT, etc.)
+- **States** — Distribution by query state (executing, waiting, etc.)
+- **Dbs** — Distribution by database name
 
-<img
-  className="block dark:block"
-  src="/images/queries/pie-charts.jpg"
-  alt="Queries Pie Charts"
-/>  
+### Queries Table
 
-### Table View
+The queries table presents a detailed tabulation of ongoing queries and processes, including query text, execution time, user, state, command, client host, and more. Advanced filtering options let users sort and filter this data by various metrics, such as duration, to quickly isolate long-running or resource-intensive queries.
 
-This view presents a detailed tabulation of ongoing queries and processes, providing specifics like query text, start time, execution duration, and more. Advanced filtering options let users sort and filter this data by various metrics, such as duration, to quickly isolate long-running or resource-intensive queries.
-
-<img
-  className="block dark:block"
-  src="/images/queries/table.jpg"
-  alt="Queries Table"
-/>  
+Select one or more rows and click **Kill selected processes** to immediately terminate problematic or unresponsive queries.

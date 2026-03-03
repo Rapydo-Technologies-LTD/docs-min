@@ -1,47 +1,70 @@
 #### Cortex Rules List
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation1.png"
-  alt="Triggers and Actions"
-/>
+Cortex Rules are listed in a table showing the trigger type, operator, trigger value, and action (Block, Throttle, Rate Limit, or Rewrite) for each rule. Each rule can be enabled or disabled independently without deleting it.
 
 #### Rate Limit users and IPs
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation2.png"
-  alt="Triggers and Actions"
-/>
+Limit concurrent connections from specific users coming from a particular network:
+
+```
+Trigger 1: User(s) In "reporting_user, analytics_user"
+Trigger 2: IP(s) In "203.0.113.0/24"
+
+Action: Rate Limit
+Value: 5 concurrent connections
+```
+
+Result: Users in the list connecting from the specified IP range are limited to 5 simultaneous connections. Requests above the limit are dropped.
 
 #### Block queries that with a specific query pattern
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation3.png"
-  alt="Triggers and Actions"
-/>
+Block DELETE operations across all tables from non-admin connections:
+
+```
+Trigger 1: Query Pattern Like "delete from !@!;"
+Trigger 2: User(s) Not In "admin, dba"
+
+Action: Block
+```
+
+Result: Any DELETE query from users outside the admin/dba list is blocked immediately before execution. The `!@!` wildcard matches any table name.
 
 #### Throttle using a specific time range
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation4.png"
-  alt="Triggers and Actions"
-/>
+Throttle resource-intensive report queries during peak business hours:
+
+```
+Trigger 1: Time (09:00–18:00 daily)
+Trigger 2: Query Pattern Like "select !@! from reports !@!"
+
+Action: Throttle
+Value: 10 concurrent connections
+```
+
+Result: During business hours, matching report queries are queued if they exceed 10 concurrent connections. Requests above the threshold wait in queue rather than being dropped.
 
 #### Rewrite queries that with a specific query pattern and limit their rate
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation5.png"
-  alt="Triggers and Actions"
-/>
+Rewrite an unbounded SELECT to enforce a row limit before execution:
+
+```
+Trigger: Query Pattern Like "select !@! from large_table;"
+
+Action: Rewrite
+Rewrite Value: select !@! from large_table LIMIT 1000;
+```
+
+Result: Queries matching the pattern are automatically rewritten to include a LIMIT clause before they reach the database, preventing full table scans.
 
 #### Block certain users during a specific time range
 
-<img
-  className="block dark:block"
-  src="/images/automation/cortex/automation6.png"
-  alt="Triggers and Actions"
-/>
+Block non-admin users from connecting outside defined business hours:
+
+```
+Trigger 1: Time (outside 09:00–18:00 daily)
+Trigger 2: User(s) Not In "admin, dba"
+
+Action: Block
+```
+
+Result: Any connection attempt from users not in the admin or dba list is blocked when made outside the defined time window. Admin and DBA users are unaffected.

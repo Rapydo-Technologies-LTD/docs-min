@@ -3,14 +3,6 @@ title: "Dashboard View"
 description: "Detailed breakdown of all dashboard metrics and widgets"
 ---
 
-### Full Dashboard View
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/dashboard-screenshot.png"
-  alt="Dashboard Full"
-/>  
-
 ---
 
 ## Dashboard Controls
@@ -31,21 +23,18 @@ This widget displays the time range for the data represented in the graphs and m
 ### DB Instances Status
 
 This widget displays the total number of database instances across three states:
-- **Active**: Instances currently running and accepting connections
-- **Idle**: Instances running but not actively processing queries
-- **Stopped**: Instances that are currently offline
+- **Configured**: Instances discovered and actively monitored by Rapydo
+- **Not Configured**: Instances detected but not yet configured for monitoring
+- **Not Available**: Instances that cannot be reached or are unavailable
 
-**Why it matters:**
-Monitoring instance states helps with resource management and ensures the right databases are running based on current load requirements.
+Clicking this widget navigates to the **Databases** page for full instance details.
 
 ### DB Connection Health
 
-This widget shows the health status of database connections across all monitored instances:
-- **Healthy Connections**: Connections operating normally
-- **Unhealthy Connections**: Connections experiencing issues
+This widget shows the count of unclosed (unhealthy) connections across all monitored instances.
 
 **What to watch for:**
-Unhealthy connections could indicate network issues, resource constraints, authentication problems, or connection pool exhaustion. Investigate unhealthy connections immediately to prevent system downtime or performance degradation.
+A non-zero unclosed connection count could indicate network issues, resource constraints, authentication problems, or connection pool exhaustion. Investigate immediately to prevent system downtime or performance degradation.
 
 ---
 
@@ -53,12 +42,12 @@ Unhealthy connections could indicate network issues, resource constraints, authe
 
 ### User Activity
 
-Displays the current number of active users versus idle users across your database infrastructure:
+Displays the current number of active versus inactive users across your database infrastructure:
 - **Active Users**: Users currently executing queries or maintaining active sessions
-- **Idle Users**: Users connected but not performing any significant activity
+- **Inactive Users**: Users connected but not performing any significant activity
 
 **Optimization tip:**
-A high idle user count with low activity might indicate a need for session timeout adjustments or automated cleanup of inactive connections to free up resources.
+A high inactive user count with low activity might indicate a need for session timeout adjustments or automated cleanup of inactive connections to free up resources.
 
 ### Number of Clients
 
@@ -92,8 +81,10 @@ This metric helps identify potential bottlenecks and inefficiencies:
 - May indicate missing indexes or inefficient query structure
 - Could signal the need for query optimization or resource scaling
 
-**Action item:**
-Click through to see the actual query and use Rapydo's Query Analysis feature for optimization recommendations.
+**Click action:**
+Opens a detail view with two tabs:
+- **Summary statistics** — aggregated stats for the longest queries
+- **Detailed information** — full per-query details including query text, with options to analyze using Query Analysis
 
 ### Query Throttling
 
@@ -117,7 +108,11 @@ Shows the current caching activity and efficiency across your database instances
 
 ### Locks & Deadlocks
 
-This graph shows both locks and deadlocks over time across your database instances, giving a combined view of locking contention.
+This bar chart shows both locks and deadlocks over time across your database instances. Use the **Locks** / **Deadlocks** toggle on the widget to switch between the two views. Clicking a bar navigates to the **Queries** page filtered to that database instance and a 1-hour window starting at the clicked timestamp.
+
+Clicking the widget title opens a detail view with two tabs:
+- **Number of locks**
+- **Number of deadlocks**
 
 **Understanding locks:**
 Database locks are mechanisms to control concurrent access to data during transactions. While normal, excessive locking can indicate contention issues.
@@ -127,9 +122,9 @@ Database locks are mechanisms to control concurrent access to data during transa
 - Sustained high lock levels
 - Correlation between locks and slow queries
 
-### Deadlocks
+### DEADLOCKS
 
-This counter shows the total number of deadlocks encountered across all databases during the selected time range.
+This bar chart shows the number of deadlocks encountered across your database instances over time.
 
 **What are deadlocks?**
 Deadlocks occur when two or more queries block each other, preventing further execution. For example:
@@ -148,12 +143,15 @@ Deadlocks occur when two or more queries block each other, preventing further ex
 
 ### Max CPU Usage
 
-This graph shows CPU usage percentage across different database instances over time. Each colored line represents a specific instance.
+This line chart shows CPU usage (%) across different database instances over time. Each colored line represents a specific instance.
 
 **What to monitor:**
 - Instances approaching 100% CPU utilization
 - Sustained high CPU usage indicating resource-intensive workloads
 - Sudden spikes that correlate with slow query performance
+
+**Click action:**
+Clicking a data point navigates to the **Queries** page filtered to that database instance and a 1-hour window ending at the clicked timestamp.
 
 **Performance tip:**
 If an instance consistently runs above 80% CPU, consider:
@@ -163,13 +161,16 @@ If an instance consistently runs above 80% CPU, consider:
 
 ### Max Connections Usage
 
-This graph displays the percentage of maximum database connections being used across different instances over time.
+This line chart displays the percentage (%) of maximum database connections being used across different instances over time.
 
 **Why this matters:**
 Each database instance has a connection limit. When you approach this limit:
 - New connection attempts will fail
 - Applications may experience connection errors
 - Database performance can degrade
+
+**Click action:**
+Clicking a data point navigates to the **Queries** page filtered to that database instance and a 1-hour window ending at the clicked timestamp.
 
 **Best practice:**
 - Monitor instances approaching 80-90% connection utilization
@@ -178,12 +179,15 @@ Each database instance has a connection limit. When you approach this limit:
 
 ### IOPS Usage
 
-This graph shows Input/Output Operations Per Second (IOPS) for each database instance. IOPS measures the performance of your storage system.
+This line chart shows Input/Output Operations Per Second (IOPS) for each database instance. IOPS measures the performance of your storage system. Values are shown as raw numbers (no percentage).
 
 **Understanding IOPS:**
 - **High IOPS**: Indicates heavy read/write activity
 - **Low IOPS**: Suggests light database activity or caching effectiveness
 - **Spikes**: Often correlate with batch jobs, reports, or data loads
+
+**Click action:**
+Clicking a data point navigates to the **Queries** page filtered to that database instance and a 1-hour window ending at the clicked timestamp.
 
 **Optimization strategies:**
 - If sustained high IOPS occur, consider:
@@ -201,12 +205,6 @@ Every widget on the dashboard is clickable, providing deeper insights into speci
 ### Example: Clicking the Longest Query Widget
 
 When you click on the **Longest Query** widget, you open a detailed view showing all currently running queries sorted by execution time.
-
-<img
-  className="block dark:block"
-  src="/images/dashboard/dashboard-longes-queries-table.png"
-  alt="Longest Query Detailed View"
-/>  
 
 **What you can do in the detailed view:**
 
@@ -226,8 +224,8 @@ Each widget provides a gateway to more detailed information:
 | **Widget** | **Detailed View Shows** |
 |-----------|------------------------|
 | **Longest Query** | All running queries sorted by duration, with ability to analyze or kill queries |
-| **Locks & Deadlocks** | Active locks, blocking queries, wait times, and transaction details |
-| **Deadlocks** | Deadlock history, involved queries, and resolution timeline |
+| **Locks & Deadlocks** | Active locks and deadlocks split across two tabs: Number of locks / Number of deadlocks |
+| **DEADLOCKS** | Deadlock history, involved queries, and resolution timeline |
 | **Max CPU Usage** | Per-instance CPU trends, peak usage times, and resource-intensive queries |
 | **Max Connections Usage** | Connection pool status, active vs idle connections, connection history |
 | **IOPS Usage** | Disk I/O patterns, read/write breakdown, storage performance trends |
@@ -246,7 +244,7 @@ Each widget provides a gateway to more detailed information:
 | **User Activity** | High idle users with low activity |
 | **Query AVG Time** | Sudden increase vs. baseline |
 | **Longest Query** | Exceeds acceptable thresholds |
-| **Deadlocks** | Any deadlocks occur |
+| **DEADLOCKS** | Any deadlocks occur |
 | **Locks & Deadlocks** | Large spikes or sustained high counts |
 | **Max CPU Usage** | Sustained >80% or spikes to 100% |
 | **Max Connections Usage** | Approaching 90% utilization |
