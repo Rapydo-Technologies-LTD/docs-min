@@ -86,14 +86,6 @@ Opens a detail view with two tabs:
 - **Summary statistics** — aggregated stats for the longest queries
 - **Detailed information** — full per-query details including query text, with options to analyze using Query Analysis
 
-### Query Throttling
-
-Displays the number of queries currently throttled by active Scout Rules. When a rate-limit action is triggered, the throttled query count is reflected here.
-
-**Why this matters:**
-- A non-zero value means Scout Rules are actively controlling query concurrency
-- Helps confirm that throttling rules are firing as expected
-
 ### Caching
 
 Shows the current caching activity and efficiency across your database instances.
@@ -249,7 +241,6 @@ Each widget provides a gateway to more detailed information:
 | **Max CPU Usage** | Sustained >80% or spikes to 100% |
 | **Max Connections Usage** | Approaching 90% utilization |
 | **IOPS Usage** | Sustained high levels or unusual spikes |
-| **Query Throttling** | Non-zero count appears unexpectedly |
 
 ---
 
