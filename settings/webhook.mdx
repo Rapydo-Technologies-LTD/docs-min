@@ -1,0 +1,87 @@
+---
+title: 'Webhook Configuration'
+description: 'Configure webhook endpoints for alert and rule notifications'
+---
+
+## Overview
+
+The **Webhook Configuration** settings page lets you define HTTP endpoints that Rapydo will call when Alert Rules or Scout Rules trigger notifications. Each webhook can be configured with authentication, retry behavior, and SSL verification.
+
+Access this page from **Settings → Webhook**.
+
+---
+
+## Webhook List
+
+The main view shows a table of all configured webhooks with the following columns:
+
+| Column | Description |
+|--------|-------------|
+| **Name** | Friendly name for the webhook |
+| **URL** | The target endpoint URL |
+| **Method** | HTTP method (POST, PUT, or PATCH) |
+| **Type** | Slack or Generic |
+| **Auth Type** | Authentication method (None, Bearer, Basic, or Custom) |
+| **Active** | Whether the webhook is enabled |
+| **Actions** | Edit or Delete the webhook |
+
+---
+
+## Adding a Webhook
+
+Click **Add New Webhook Configuration** to open the configuration panel. Fields are grouped into three sections.
+
+### Basic Configuration
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Name** | Yes | A descriptive name for the webhook (max 255 characters) |
+| **URL** | Yes | The endpoint URL. Must use `http://` or `https://` |
+| **HTTP Method** | Yes | How to call the endpoint: **POST**, **PUT**, or **PATCH** (default: POST) |
+| **Webhook Type** | Yes | **Slack** — sends rich Block Kit formatted messages. **Generic** — sends a clean JSON payload suitable for PagerDuty, custom alerting systems, or any HTTP endpoint |
+
+### Authentication
+
+| Field | Description |
+|-------|-------------|
+| **Auth Type** | Choose the authentication method: **None**, **Bearer**, **Basic**, or **Custom** (default: None) |
+| **Auth Token** | Shown when Auth Type is not None. Enter the token or credentials. Hidden by default with a show/hide toggle. |
+
+> **Security note:** Auth tokens are write-only. After saving, the token is never returned by the API. When editing an existing webhook, leave the token field empty to keep the current token unchanged.
+
+### Advanced Settings
+
+| Field | Default | Range | Description |
+|-------|---------|-------|-------------|
+| **Timeout** | 30 seconds | 1–300 | How long to wait for a response before considering the request failed |
+| **Retry Count** | 3 | 0–10 | Number of retry attempts if the request fails |
+| **Retry Delay** | 5 seconds | 1–60 | Delay between retry attempts |
+| **Verify SSL Certificate** | Enabled | — | Validates the SSL certificate of the target URL. Disable only when testing with self-signed certificates |
+
+---
+
+## Testing a Webhook
+
+Before saving, click **Test** to send a test request to the configured URL. The button shows a loading spinner while the request is in progress. Use this to confirm the endpoint is reachable and authentication is correct.
+
+---
+
+## Editing a Webhook
+
+Click **Edit** in the row actions menu to open the configuration panel pre-filled with the current settings. Make your changes and click **Save**.
+
+---
+
+## Deleting a Webhook
+
+Click **Delete** in the row actions menu to remove the webhook. Any Alert Rules or Scout Rules using this webhook will need to be updated to use a different notification destination.
+
+---
+
+## Using Webhooks in Rules
+
+Once configured, webhooks are available as notification destinations when creating:
+- **Alert Rules** — select the webhook under the Webhook notification option
+- **Scout Rules** — enter a webhook URL in the Notification section
+
+See [Alert Rules Reference](/automation/alerts_triggers_and_actions) and [Scout Rules Reference](/automation/scout_triggers_and_actions) for details.

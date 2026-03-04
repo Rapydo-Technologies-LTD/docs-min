@@ -1,0 +1,90 @@
+---
+title: 'Logging'
+description: 'Configure log levels for Rapydo system components'
+---
+
+## Overview
+
+The **Logging** settings page lets you control the verbosity of log output for specific Rapydo system components. By adding logger configurations, you can increase detail for targeted modules during debugging or reduce noise in production.
+
+Access this page from **Settings → Logging**.
+
+---
+
+## Logger List
+
+The main view shows a table of all configured loggers:
+
+| Column | Description |
+|--------|-------------|
+| **Logger Name** | The system component being configured. Displays as **Root Logger** when no name is specified (applies to all components) |
+| **Log Level** | The minimum severity level of messages that will be logged |
+| **Actions** | Delete the logger configuration |
+
+---
+
+## Log Levels
+
+Log levels control the minimum severity of messages that are written to logs. Only messages at or above the configured level are recorded.
+
+| Level | Description |
+|-------|-------------|
+| **NOTSET** | Inherits the level from the parent logger (or root) |
+| **DEBUG** | Detailed diagnostic information for debugging |
+| **INFO** | General operational messages confirming things are working as expected |
+| **WARNING** | Indicates something unexpected happened but the system is still working |
+| **ERROR** | A serious problem that prevented a function from completing |
+| **CRITICAL** | A severe error that may cause the system to stop functioning |
+
+**Default level:** INFO
+
+---
+
+## Adding a Logger
+
+Click **Add Logger Configuration** to open the configuration panel.
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Logger Name** | No | The name of the system component to configure. Leave empty to configure the **root logger**, which applies to all components not specifically configured |
+| **Log Level** | Yes | Select the minimum log level for this component |
+
+Click **Save** to apply the configuration.
+
+---
+
+## Root Logger
+
+Leaving the **Logger Name** field empty creates a **Root Logger** configuration that sets the default log level for all system components. This is the global floor — individual component loggers can override it by specifying a more specific logger name.
+
+**Example:**
+- Root Logger: WARNING — suppresses most output by default
+- `rapydo.queries`: DEBUG — enables detailed logging for the queries module only
+
+---
+
+## Deleting a Logger
+
+Click **Delete** in the row actions menu to remove a logger configuration. The component will revert to the default log level.
+
+---
+
+## Common Use Cases
+
+**Enable debug logging for a specific module during an investigation:**
+```
+Logger Name: rapydo.queries
+Log Level: DEBUG
+```
+
+**Suppress verbose output in production:**
+```
+Logger Name: (empty — Root Logger)
+Log Level: WARNING
+```
+
+**Track only critical errors from all components:**
+```
+Logger Name: (empty — Root Logger)
+Log Level: ERROR
+```

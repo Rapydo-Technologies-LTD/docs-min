@@ -89,7 +89,9 @@
 						"settings/aws-accounts",
 						"settings/license",
 						"settings/slack-integration",
-						"settings/user-management"
+						"settings/user-management",
+						"settings/webhook",
+						"settings/logging"
 					]
 				}
 			]
