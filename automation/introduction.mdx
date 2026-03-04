@@ -20,7 +20,7 @@ Rapydo's automation system operates on a simple principle: **define conditions, 
 This proactive approach enables you to:
 - **Prevent Issues Before They Escalate**: Automatically respond to performance degradation
 - **Maintain Consistent Performance**: Enforce query duration limits and resource constraints
-- **Stay Informed**: Receive alerts via email or Slack when thresholds are breached
+- **Stay Informed**: Receive alerts via email or webhook when thresholds are breached
 - **Reduce Manual Overhead**: Let automation handle routine monitoring and responses
 
 ---
@@ -55,17 +55,17 @@ Alert Rules monitor database and system metrics, notifying you when performance 
 
 - **Resource Monitoring**: Track CPU, memory, connections, and IOPS usage
 - **Threshold-Based Alerting**: Get notified when metrics exceed defined limits
-- **Multi-Channel Notifications**: Receive alerts via email, Slack, or both
+- **Multi-Channel Notifications**: Receive alerts via email or webhook
 - **Proactive Issue Detection**: Identify resource constraints before they cause outages
 
 **Common Use Cases:**
 - Alert when CPU usage exceeds 80% for more than 5 minutes
-- Notify team via Slack when connection pool reaches 90% capacity
+- Notify team via webhook when connection pool reaches 90% capacity
 - Send email alerts when IOPS usage spikes unexpectedly
 - Monitor memory usage and alert before out-of-memory errors occur
 
 **How Alert Rules Work:**
-Alert Rules continuously evaluate metrics across your database instances. When a metric crosses your defined threshold for a specified duration, Rapydo sends notifications to your configured channels (email, Slack, or both), enabling your team to respond quickly.
+Alert Rules continuously evaluate metrics across your database instances. When a metric crosses your defined threshold for a specified duration, Rapydo sends notifications to your configured channels (email, webhook, or both), enabling your team to respond quickly.
 
 ---
 
@@ -91,7 +91,7 @@ Additional criteria to narrow down when the rule applies. Examples:
 What happens when the trigger conditions are met. Examples:
 - Kill the query
 - Send email notification
-- Send Slack message
+- Send webhook notification
 - Log the event
 
 ---
@@ -133,7 +133,7 @@ Ready to set up your first automation rule? Here's the typical workflow:
 
 **Step 3: Configure Actions**
 - Choose what happens when conditions are met
-- Set up notification channels (email, Slack)
+- Set up notification channels (email, webhook)
 - Test the rule with sample scenarios
 
 **Step 4: Monitor and Refine**
@@ -157,7 +157,7 @@ Ready to set up your first automation rule? Here's the typical workflow:
 
 ✅ **Test Before Deploying**: Create rules in test environments first to validate behavior
 
-✅ **Use Multiple Notification Channels**: Configure both email and Slack for critical alerts
+✅ **Use Multiple Notification Channels**: Configure both email and webhook for critical alerts
 
 ✅ **Document Your Rules**: Keep track of why each rule exists and what problem it solves
 

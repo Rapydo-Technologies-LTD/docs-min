@@ -469,14 +469,20 @@ Automatically terminates idle connections when connection utilization exceeds a 
 - You need gradual cleanup without disrupting all idle sessions at once
 
 **Configuration:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Value** | Yes | Maximum number of idle connections to kill per cycle |
+
 - Typically paired with "Connection Utilization > 80%" trigger
 - Rate limit prevents killing too many connections simultaneously
 
 **Example Scenario:**
 ```
 Trigger: Connection utilization > 80%
-Action: Kill idle connections (rate limited)
-Result: Idle connections are gradually terminated until pool 
+Action: Kill idle connections
+Value: 10 (kill up to 10 idle connections per cycle)
+Result: Idle connections are gradually terminated until pool
         utilization drops below 80%
 ```
 
@@ -553,6 +559,8 @@ Configure how frequently RCA reports are sent to avoid alert fatigue:
 - Educating team on query optimization
 
 **Important:** Query Analysis goes beyond just identifying the problem—it provides complete solutions with implementation guidance.
+
+**⚠️ Required:** A notification destination (email or webhook) must be configured for Query Analysis (RCA) to work. The analysis report cannot be delivered without a valid notification target.
 
 **Example Scenario:**
 ```

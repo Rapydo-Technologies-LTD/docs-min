@@ -196,10 +196,12 @@ When a Scout Rule is triggered, you can execute one of these actions:
 
 **💡 Important:** RCA goes beyond just identifying the problem—it provides complete solutions with implementation guidance.
 
+**⚠️ Required:** A notification destination (email or webhook) must be configured when using RCA. The analysis report cannot be delivered without a valid notification target.
+
 
 ---
 
-**Notification Only**
+**No action (Notification Only)**
 - Select **No action** as the action type, then enable notifications with your email or webhook
 - Sends alert without taking any database action — queries continue running unaffected
 - The event is logged in Rapydo for audit purposes
