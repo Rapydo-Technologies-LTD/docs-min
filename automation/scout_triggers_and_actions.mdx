@@ -135,7 +135,7 @@ Result: Triggers the configured action (e.g., Kill Query) for SELECT queries mis
 **Compliance - Monitor Sensitive Data Access:**
 ```sql
 Pattern: %SELECT * FROM salary%
-Result: Triggers the configured action (e.g., Notification Only) when the salary table is queried
+Result: Triggers the configured action (e.g., No action + notification) when the salary table is queried
 ```
 
 ---
@@ -376,7 +376,7 @@ Advanced trigger that executes a custom SQL query. If the query returns any data
 When a Custom Script trigger is used, only the following actions are available:
 - Kill Query
 - Kill Connection
-- Notification Only
+- No action (with notification)
 - Custom Script (action)
 
 **Use Cases:**
@@ -623,7 +623,10 @@ Result: Resolves blocking with minimal disruption
 
 ### **Notification Only**
 
-Sends alert via email or webhook without taking any database action. Queries continue running unaffected.
+Sends an alert via email or webhook without taking any database action. Queries continue running unaffected.
+
+**How to configure it in the UI:**
+Select **No action** as the action type, then enable notifications and enter your email or webhook destination. This combination monitors and alerts without intervening.
 
 **How It Works:**
 - Rule monitors for trigger conditions
@@ -638,14 +641,11 @@ Sends alert via email or webhook without taking any database action. Queries con
 - You want awareness without automatic intervention
 - Monitoring for compliance/audit purposes
 
-**Configuration:**
-- Toggle notifications: Active/Inactive
-- Enter email addresses for alerts
-
 **Example Scenario:**
 ```
 Trigger: Query pattern LIKE "%DELETE FROM users%"
-Action: Notification Only
+Action: No action
+Notification: Active
 Email: security-team@company.com
 
 Result: Team is alerted to potentially dangerous query,
@@ -673,7 +673,7 @@ Result: Team is alerted to potentially dangerous query,
 
 **Use With:**
 - Any action type (Kill Query, Kill Connection, Query Analysis, etc.)
-- Particularly useful with "Notification Only" for monitoring without action
+- Particularly useful with **No action** for monitoring without intervention
 
 ---
 
@@ -879,7 +879,7 @@ Email: dba-team@company.com
 
 ## Best Practices
 
-✅ **Start with Notification Only** before enabling kill actions—understand query patterns first
+✅ **Start with No action + notification** before enabling kill actions—understand query patterns first
 
 ✅ **Use Query Pattern carefully** - Copy exact formatting from real queries, not from documentation
 
@@ -925,7 +925,7 @@ Email: dba-team@company.com
 - Add more specific triggers (user, database, IP)
 - Increase duration thresholds
 - Use NOT In operators to exclude legitimate traffic
-- Switch to "Notification Only" to monitor before killing
+- Switch to **No action** + notification to monitor before killing
 - Review killed query logs to identify patterns
 
 ---
