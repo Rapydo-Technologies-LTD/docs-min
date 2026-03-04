@@ -1,23 +1,23 @@
 ---
-title: 'Alert Rules - Triggers and Actions'
+title: 'Alert Rules - Metrics and Notifications'
 description: 'Complete reference for Alert Rules configuration'
 ---
 
 ## Overview
 
-Alert Rules monitor database and system metrics, sending notifications when performance thresholds are exceeded. This guide covers all available triggers, operators, actions, and configuration parameters.
+Alert Rules monitor database and system metrics, sending notifications when performance thresholds are exceeded. This guide covers all available metrics, operators, notifications, and configuration parameters.
 
 ---
 
 ## Core Concepts
 
-**Triggers** — Events or conditions defined by you that activate the rule
+**Metrics** — Conditions defined by you that activate the rule
 - Example: CPU Utilization exceeds 90%
 - Example: Free Memory drops below 2048 MB
 
-**Actions** — Measures the system takes when trigger conditions are met
+**Notifications** — How you are informed when metric conditions are met
 - Example: Send email notification
-- Example: Send webhook to Slack/Teams
+- Example: Send webhook to a channel
 
 **Select Database(s)** — Choose one or more database instances to apply the rule to
 - Select All: Apply to all monitored instances
@@ -25,7 +25,7 @@ Alert Rules monitor database and system metrics, sending notifications when perf
 
 ---
 
-## Available Trigger Types
+## Available Metric Types
 
 ### Resource Utilization
 
@@ -121,33 +121,33 @@ Alert Rules monitor database and system metrics, sending notifications when perf
 
 ---
 
-## Trigger Operators
+## Metric Operators
 
-Use operators to define threshold conditions for your triggers:
+Use operators to define threshold conditions for your metrics:
 
 **Greater than**
 - Symbol: `>`
-- Trigger when metric exceeds the threshold
+- Alert when metric exceeds the threshold
 - Example: CPU Utilization > 80%
 
 **Greater than or equal**
 - Symbol: `>=`
-- Trigger when metric meets or exceeds the threshold
+- Alert when metric meets or exceeds the threshold
 - Example: CPU Utilization >= 80%
 
 **Less than**
 - Symbol: `<`
-- Trigger when metric falls below the threshold
+- Alert when metric falls below the threshold
 - Example: Free Memory < 2048 MB
 
 **Less than or equal**
 - Symbol: `<=`
-- Trigger when metric meets or falls below the threshold
+- Alert when metric meets or falls below the threshold
 - Example: Free Memory <= 2048 MB
 
 ---
 
-## Action Types
+## Notification Methods
 
 ### Email
 - Send email notification to specified recipients
@@ -170,7 +170,7 @@ Mail per instance: Enabled
 ### Webhook
 - Send HTTP POST request to configured webhook URL
 - **Configuration:**
-  - **Webhook Destinations:** Select from configured webhooks (Settings → Slack Integration)
+  - **Webhook Destinations:** Select from configured webhooks (Settings → Webhook)
   - **Payload:** JSON containing alert details
 
 **Common Integrations:**
@@ -180,7 +180,7 @@ Mail per instance: Enabled
 - Custom alerting systems
 
 **Setup:**
-1. Go to Settings → Slack Integration
+1. Go to Settings → Webhook
 2. Configure your webhook URL
 3. Test the connection
 4. Select the webhook when creating Alert Rules

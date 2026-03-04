@@ -44,7 +44,7 @@ Before creating a rule, understand your database's normal behavior and identify 
 ### Alert Rules
 **Use for:** Metric monitoring and notifications
 
-- Monitor CPU, memory, connections, IOPS, locks, deadlocks
+- Monitor CPU, memory, connections, IOPS
 - Send alerts when thresholds are exceeded
 - Multi-metric support (combine multiple conditions)
 - Email and webhook notifications
@@ -77,7 +77,7 @@ Example: Duration > 300 seconds
 
 ### For Alert Rules
 
-**Metric Triggers**
+**Metrics**
 
 Available metrics for monitoring:
 
@@ -354,9 +354,9 @@ Notification Interval: 3 minutes
 ```
 Metric 1: CPU Utilization > 85%
 AND
-Metric 2: Connection Count > 200 
+Metric 2: Connection Count > 200
 
-Action: Webhook to #critical-alerts
+Notification: Webhook to #critical-alerts
 ```
 → Only alerts when database is both CPU-bound AND connection-saturated
 
@@ -368,7 +368,7 @@ Metric 1: Max Query Duration > 30 seconds
 AND
 Metric 2: Waits count > 50
 
-Action: Webhook to #database-ops
+Notification: Webhook to #database-ops
 ```
 → Alerts when slow queries correlate with high lock contention
 
