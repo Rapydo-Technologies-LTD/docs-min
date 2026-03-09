@@ -5,6 +5,8 @@ description: 'Complete reference for Scout Rules configuration'
 
 ## Overview
 
+![Scout Rules List](/images/automation-screenshot.png)
+
 Scout Rules monitor long-running queries and database activity in real-time, automatically responding to performance issues. This guide covers all available triggers, actions, and configuration options for Scout Rules.
 
 ---
@@ -400,6 +402,8 @@ Result: Returns query IDs for queries running longer than 5 minutes during busin
 
 ## **3. Actions**
 
+![Create Scout Rule](/images/automation-create-scout-rule.png)
+
 Choose what happens when trigger conditions are met. You can select **one action per rule**.
 
 ---
@@ -630,6 +634,8 @@ Result: Resolves blocking with minimal disruption
 ---
 
 ### **Notification Only**
+
+![Scout Rule Notification](/images/automation-scout-rule-notification.png)
 
 Sends an alert via email or webhook without taking any database action. Queries continue running unaffected.
 
@@ -882,6 +888,14 @@ Email: dba-team@company.com
 ```
 
 **Result:** Slow analytics queries are analyzed, remediation plans emailed to DBAs
+
+---
+
+## Execution Logs
+
+![Execution Logs](/images/automation-execution-logs.png)
+
+The Execution Logs panel shows a history of all rule activations — when each rule fired, which query triggered it, and what action was taken. Use this to verify rules are working correctly and to review past interventions.
 
 ---
 

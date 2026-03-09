@@ -1,5 +1,7 @@
 ## Execute Query View
 
+![Execute Query](/images/execute-query-screenshot.png)
+
 The Execute Query View is divided into three main areas: the instance selector at the top, the SQL editor in the middle, and the results panel below.
 
 ### Instance Selector
@@ -18,6 +20,8 @@ Type or paste your SQL query directly into the editor. The editor supports multi
 
 ### Templates
 
+![Query Templates](/images/execute-templates-screenshot.png)
+
 Below the SQL editor, a list of commonly used query templates is displayed. Selecting a template loads its SQL into the editor, ready to run or modify. Templates cover tasks such as:
 
 - **Schema Drift** — Compares column names and ordinal positions across selected instances to detect schema inconsistencies between replicas or environments.
@@ -27,6 +31,8 @@ Below the SQL editor, a list of commonly used query templates is displayed. Sele
 - **Full Table Scan** — Detects queries that scan entire tables without using indexes. Result columns include SUM_ROWS_EXAMINED, SUM_ROWS_SENT, DIGEST_TEXT, and a RECOMMENDATION column with optimization advice.
 
 ### Save As Template
+
+![Save As Template](/images/execute-query-save-template.png)
 
 After writing a query, click **Save As Template** to save it for future reuse. Saved templates appear in the templates list and can be modified or deleted at any time.
 
